@@ -1,27 +1,26 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.EmpresaDAL;
+import SoftPet.backend.DAO.EmpresaDAO;
 import SoftPet.backend.dto.EmpresaDTO;
 import SoftPet.backend.dto.EmpresaProfileResponseDTO;
 import SoftPet.backend.model.EmpresaModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class EmpresaService {
 
     @Autowired
-    private EmpresaDAL empresaDAL;
+    private EmpresaDAO empresaDAO;
 
     public List<EmpresaDTO> listarEmpresas() {
-        return empresaDAL.getAllEmpresas();
+        return empresaDAO.getAllEmpresas();
     }
 
     public EmpresaDTO buscarPorId(Long id) {
-        return empresaDAL.findByEmpresa(id);
+        return empresaDAO.findByEmpresa(id);
     }
 
     public void cadastrarEmpresa(EmpresaDTO dto) {
@@ -38,7 +37,7 @@ public class EmpresaService {
                 dto.getSite(),
                 dto.getTelefone()
         );
-        empresaDAL.addEmpresa(empresa);
+        empresaDAO.addEmpresa(empresa);
     }
 
     public void atualizarEmpresa(Long id, EmpresaDTO dto) {
@@ -56,7 +55,7 @@ public class EmpresaService {
                 dto.getSite(),
                 dto.getTelefone()
         );
-        empresaDAL.updateEmpresa(empresa);
+        empresaDAO.updateEmpresa(empresa);
     }
 
     public class InvalidCnpjException extends RuntimeException{
@@ -77,7 +76,7 @@ public class EmpresaService {
             throw new InvalidCnpjException("CNPJ inválido");
         }
 
-        List<EmpresaDTO> empresas = empresaDAL.getAllEmpresas();
+        List<EmpresaDTO> empresas = empresaDAO.getAllEmpresas();
         EmpresaDTO existente = empresas.stream()
                 .filter(e -> e.getCnpj().equals(dto.getCnpj()))
                 .findFirst()
@@ -98,7 +97,7 @@ public class EmpresaService {
                 dto.getTelefone()
         );
 
-        boolean sucesso = empresaDAL.updateEmpresa(empresaAtualizada);
+        boolean sucesso = empresaDAO.updateEmpresa(empresaAtualizada);
         if (!sucesso) {
             throw new RuntimeException("Falha ao atualizar a empresa no banco de dados.");
         }
@@ -110,11 +109,11 @@ public class EmpresaService {
 
 
     public void excluirEmpresa(Long id) {
-        empresaDAL.deleteByEmpresa(id);
+        empresaDAO.deleteByEmpresa(id);
     }
 
     public EmpresaProfileResponseDTO getFirstEmpresa() {
-        List<EmpresaDTO> empresas = empresaDAL.getAllEmpresas();
+        List<EmpresaDTO> empresas = empresaDAO.getAllEmpresas();
 
         if (empresas.isEmpty()) {
             throw new RuntimeException("Não existe empresa.");
@@ -139,7 +138,7 @@ public class EmpresaService {
     }
 
     public boolean existeEmpresa() {
-        return empresaDAL.getAllEmpresas().size() > 0;
+        return empresaDAO.getAllEmpresas().size() > 0;
     }
 
     public EmpresaDTO saveEmpresa(EmpresaDTO dto) {
@@ -151,7 +150,7 @@ public class EmpresaService {
             throw new RuntimeException("CNPJ inválido");
         }
 
-        List<EmpresaDTO> existentes = empresaDAL.getAllEmpresas()
+        List<EmpresaDTO> existentes = empresaDAO.getAllEmpresas()
                 .stream()
                 .filter(e -> e.getCnpj().equals(dto.getCnpj()))
                 .toList();
@@ -174,16 +173,16 @@ public class EmpresaService {
                 dto.getTelefone()
         );
 
-        empresaDAL.addEmpresa(empresa);
+        empresaDAO.addEmpresa(empresa);
 
-        return empresaDAL.getAllEmpresas().getLast(); // ou outra forma de pegar a recém-criada
+        return empresaDAO.getAllEmpresas().getLast(); // ou outra forma de pegar a recém-criada
     }
     public boolean shutdownEmpresa(String cnpj) {
-        List<EmpresaDTO> empresas = empresaDAL.getAllEmpresas();
+        List<EmpresaDTO> empresas = empresaDAO.getAllEmpresas();
         for (EmpresaDTO empresa : empresas) {
             if (empresa.getCnpj().equals(cnpj)) {
                 try {
-                    empresaDAL.deleteByEmpresa(empresa.getId());
+                    empresaDAO.deleteByEmpresa(empresa.getId());
                     return true;
                 } catch (Exception e) {
                     return false;

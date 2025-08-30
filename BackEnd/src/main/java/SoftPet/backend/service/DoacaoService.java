@@ -1,7 +1,7 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.DoacaoDAL;
-import SoftPet.backend.dal.PessoaDAL;
+import SoftPet.backend.DAO.DoacaoDAO;
+import SoftPet.backend.DAO.PessoaDAO;
 import SoftPet.backend.dto.DoacaoDTO;
 import SoftPet.backend.dto.PessoaCompletoDTO;
 import SoftPet.backend.model.DoacaoModel;
@@ -16,13 +16,13 @@ import java.util.List;
 public class DoacaoService
 {
     @Autowired
-    private DoacaoDAL doacaoDAL;
+    private DoacaoDAO doacaoDAO;
     @Autowired
-    private PessoaDAL pessoaDAL;
+    private PessoaDAO pessoaDAO;
 
     public DoacaoModel addDoacao(DoacaoDTO doacaoDTO) throws Exception
     {
-        PessoaCompletoDTO doador = pessoaDAL.findById(doacaoDTO.getDoador().getId());
+        PessoaCompletoDTO doador = pessoaDAO.findById(doacaoDTO.getDoador().getId());
 
         if(doador == null)
             throw new IllegalArgumentException("Doador não encontrado!");
@@ -45,13 +45,13 @@ public class DoacaoService
         DoacaoModel novaDoacao = doacaoDTO.getDoacao();
         novaDoacao.setId_doador(doador.getPessoa().getId());
 
-        return doacaoDAL.addDoacao(novaDoacao);
+        return doacaoDAO.addDoacao(novaDoacao);
     }
 
     public DoacaoDTO getDoacao(Long id)
     {
-        if(doacaoDAL.findByDoacao(id) != null)
-            return doacaoDAL.findByDoacao(id);
+        if(doacaoDAO.findByDoacao(id) != null)
+            return doacaoDAO.findByDoacao(id);
         return null;
     }
 
@@ -72,7 +72,7 @@ public class DoacaoService
         if(!Validation.isDataValidade(doacao.getDataValidade()))
             throw new IllegalArgumentException("Data de validade invalida!");
 
-        DoacaoDTO doacaoExistente = doacaoDAL.findByDoacao(id);
+        DoacaoDTO doacaoExistente = doacaoDAO.findByDoacao(id);
         if(doacaoExistente == null)
             throw new Exception("Não existe uma doação com esse ID!");
 
@@ -80,7 +80,7 @@ public class DoacaoService
         doacao.setId(id);
         doacao.setId_doador(doacaoExistente.getDoador().getId());
 
-        doacaoDAL.updateDoacao(doacao);
+        doacaoDAO.updateDoacao(doacao);
     }
 
     public void deleteDoacao(Long id) throws Exception
@@ -88,18 +88,18 @@ public class DoacaoService
         if(id == null || id <= 0)
             throw new IllegalArgumentException("ID da doação inválido!");
 
-        DoacaoDTO doacaoDelete = doacaoDAL.findByDoacao(id);
+        DoacaoDTO doacaoDelete = doacaoDAO.findByDoacao(id);
 
         if(doacaoDelete == null)
             throw new Exception("Não existe uma doação com esse ID!");
 
-        if(!doacaoDAL.deleteByDoacao(id))
+        if(!doacaoDAO.deleteByDoacao(id))
             throw new Exception("Erro ao deletar a doação!");
     }
 
     public List<DoacaoDTO> getAllDoacao()
     {
-        return doacaoDAL.getAllDoacoes();
+        return doacaoDAO.getAllDoacoes();
     }
 
     public void consumirDoacao(Long id, int qtdeConsumida) throws Exception
@@ -110,7 +110,7 @@ public class DoacaoService
         if(!Validation.numNegativo(qtdeConsumida))
             throw new IllegalArgumentException("Quantidade da doação inválida!");
 
-        DoacaoDTO doacaoExistente = doacaoDAL.findByDoacao(id);
+        DoacaoDTO doacaoExistente = doacaoDAO.findByDoacao(id);
         if(doacaoExistente == null)
             throw new Exception("Não existe uma doação com esse ID!");
 
@@ -123,6 +123,6 @@ public class DoacaoService
         DoacaoModel doacaoAtualizada = doacaoExistente.getDoacao();
         doacaoAtualizada.setQtde(novoEstoque);
 
-        doacaoDAL.updateDoacao(doacaoAtualizada);
+        doacaoDAO.updateDoacao(doacaoAtualizada);
     }
 }

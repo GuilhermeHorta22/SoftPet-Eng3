@@ -1,4 +1,4 @@
-package SoftPet.backend.dal;
+package SoftPet.backend.DAO;
 
 import SoftPet.backend.config.SingletonDB;
 import SoftPet.backend.model.EnderecoModel;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class EnderecoDAL
+public class EnderecoDAO
 {
     public EnderecoModel FindById(Long id)
     {

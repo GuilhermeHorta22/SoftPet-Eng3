@@ -1,4 +1,4 @@
-package SoftPet.backend.dal;
+package SoftPet.backend.DAO;
 
 import SoftPet.backend.config.SingletonDB;
 import SoftPet.backend.model.CargoModel;
@@ -13,16 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class VoluntarioDAL {
+public class VoluntarioDAO {
 
     @Autowired
-    private CargoDAL cargoDAL;
+    private CargoDAO cargoDAO;
 
     @Autowired
-    private CredenciaisDAL credenciaisDAL;
+    private CredenciaisDAO credenciaisDAO;
 
     @Autowired
-    private ContatoDAL contatoDAL;
+    private ContatoDAO contatoDAO;
 
     public VoluntarioModel create(VoluntarioModel voluntario) {
         if (voluntario == null) {
@@ -37,10 +37,10 @@ public class VoluntarioDAL {
 
         // --- MODIFICAÇÃO AQUI ---
         // Buscar ou criar credenciais para evitar duplicatas pelo login
-        Long credenciaisId = credenciaisDAL.buscarOuCriar(voluntario.getCredenciais());
+        Long credenciaisId = credenciaisDAO.buscarOuCriar(voluntario.getCredenciais());
 
         // Criar contato (vamos assumir que contato pode ser duplicado ou que addContato lida com isso)
-        ContatoModel contatoSalvo = contatoDAL.addContato(voluntario.getContato());
+        ContatoModel contatoSalvo = contatoDAO.addContato(voluntario.getContato());
 
         if (credenciaisId == null || credenciaisId <= 0) { // buscarOuCriar pode retornar -1L em falha
             throw new RuntimeException("Falha ao buscar ou criar ID das credenciais.");
@@ -57,7 +57,7 @@ public class VoluntarioDAL {
             cargoId = voluntario.getCargoCod();
         } else if (voluntario.getCargoNome() != null && !voluntario.getCargoNome().isBlank()) {
             CargoModel cargoParaBuscarOuCriar = new CargoModel(null, voluntario.getCargoNome());
-            cargoId = cargoDAL.buscarOuCriar(cargoParaBuscarOuCriar);
+            cargoId = cargoDAO.buscarOuCriar(cargoParaBuscarOuCriar);
         } else {
             throw new IllegalArgumentException("ID do Cargo ou Nome do Cargo é obrigatório.");
         }
@@ -130,7 +130,7 @@ public class VoluntarioDAL {
                 cargoId = voluntario.getCargoCod();
             } else if (voluntario.getCargoNome() != null && !voluntario.getCargoNome().isBlank()){
                 CargoModel cargoParaBuscarOuCriar = new CargoModel(null, voluntario.getCargoNome());
-                cargoId = cargoDAL.buscarOuCriar(cargoParaBuscarOuCriar);
+                cargoId = cargoDAO.buscarOuCriar(cargoParaBuscarOuCriar);
             } else {
                 throw new IllegalArgumentException("Nome ou ID do cargo é necessário para atualizar voluntário.");
             }
@@ -140,14 +140,14 @@ public class VoluntarioDAL {
             voluntario.setCargoCod(cargoId);
 
             if (voluntario.getContato() != null && voluntario.getContato().getId() != null) {
-                contatoDAL.updateContato(voluntario.getContato());
+                contatoDAO.updateContato(voluntario.getContato());
             } else if (voluntario.getContatoCod() != null && voluntario.getContato() != null) {
                 voluntario.getContato().setId(voluntario.getContatoCod());
-                contatoDAL.updateContato(voluntario.getContato());
+                contatoDAO.updateContato(voluntario.getContato());
             }
 
             if (voluntario.getCredenciais() != null && voluntario.getCredenciaisCod() != null) {
-                credenciaisDAL.atualizar(voluntario.getCredenciais(), voluntario.getCredenciaisCod());
+                credenciaisDAO.atualizar(voluntario.getCredenciais(), voluntario.getCredenciaisCod());
             }
 
             String sql = "UPDATE voluntario SET vol_nome = ?, vol_cpf = ?, car_cod = ? WHERE vol_cod = ?";
@@ -185,15 +185,15 @@ public class VoluntarioDAL {
                     voluntario.setCredenciaisCod(rs.getLong("cre_cod"));
 
                     if (voluntario.getCredenciaisCod() != null) {
-                        CredenciaisModel cred = credenciaisDAL.findById(voluntario.getCredenciaisCod());
+                        CredenciaisModel cred = credenciaisDAO.findById(voluntario.getCredenciaisCod());
                         voluntario.setCredenciais(cred);
                     }
                     if (voluntario.getContatoCod() != null) {
-                        ContatoModel cont = contatoDAL.FindById(voluntario.getContatoCod());
+                        ContatoModel cont = contatoDAO.FindById(voluntario.getContatoCod());
                         voluntario.setContato(cont);
                     }
                     if (voluntario.getCargoCod() != null) {
-                        CargoModel cargo = cargoDAL.buscarPorId(voluntario.getCargoCod());
+                        CargoModel cargo = cargoDAO.buscarPorId(voluntario.getCargoCod());
                         if (cargo != null) {
                             voluntario.setCargoNome(cargo.getNome());
                         }
@@ -227,13 +227,13 @@ public class VoluntarioDAL {
                     voluntario.setCredenciaisCod(rs.getLong("cre_cod"));
 
                     if (voluntario.getCredenciaisCod() != null) {
-                        voluntario.setCredenciais(credenciaisDAL.findById(voluntario.getCredenciaisCod()));
+                        voluntario.setCredenciais(credenciaisDAO.findById(voluntario.getCredenciaisCod()));
                     }
                     if (voluntario.getContatoCod() != null) {
-                        voluntario.setContato(contatoDAL.FindById(voluntario.getContatoCod()));
+                        voluntario.setContato(contatoDAO.FindById(voluntario.getContatoCod()));
                     }
                     if (voluntario.getCargoCod() != null) {
-                        CargoModel cargo = cargoDAL.buscarPorId(voluntario.getCargoCod());
+                        CargoModel cargo = cargoDAO.buscarPorId(voluntario.getCargoCod());
                         if (cargo != null) {
                             voluntario.setCargoNome(cargo.getNome());
                         }
@@ -262,13 +262,13 @@ public class VoluntarioDAL {
                     voluntario.setCredenciaisCod(rs.getLong("cre_cod"));
 
                     if (voluntario.getCredenciaisCod() != null) {
-                        voluntario.setCredenciais(credenciaisDAL.findById(voluntario.getCredenciaisCod()));
+                        voluntario.setCredenciais(credenciaisDAO.findById(voluntario.getCredenciaisCod()));
                     }
                     if (voluntario.getContatoCod() != null) {
-                        voluntario.setContato(contatoDAL.FindById(voluntario.getContatoCod()));
+                        voluntario.setContato(contatoDAO.FindById(voluntario.getContatoCod()));
                     }
                     if (voluntario.getCargoCod() != null) {
-                        CargoModel cargo = cargoDAL.buscarPorId(voluntario.getCargoCod());
+                        CargoModel cargo = cargoDAO.buscarPorId(voluntario.getCargoCod());
                         if (cargo != null) {
                             voluntario.setCargoNome(cargo.getNome());
                         }
@@ -290,13 +290,13 @@ public class VoluntarioDAL {
         }
         boolean credAtualizado = true;
         if (voluntario.getCredenciais() != null && voluntario.getCredenciaisCod() != null) {
-            credAtualizado = credenciaisDAL.atualizar(voluntario.getCredenciais(), voluntario.getCredenciaisCod());
+            credAtualizado = credenciaisDAO.atualizar(voluntario.getCredenciais(), voluntario.getCredenciaisCod());
         }
 
         boolean contAtualizado = true;
         if (voluntario.getContato() != null && voluntario.getContatoCod() != null) {
             voluntario.getContato().setId(voluntario.getContatoCod());
-            contAtualizado = contatoDAL.updateContato(voluntario.getContato());
+            contAtualizado = contatoDAO.updateContato(voluntario.getContato());
         }
 
         if (!credAtualizado || !contAtualizado) {
@@ -309,7 +309,7 @@ public class VoluntarioDAL {
             cargoId = voluntario.getCargoCod();
         } else if (voluntario.getCargoNome() != null && !voluntario.getCargoNome().isBlank()) {
             CargoModel cargoParaBuscarOuCriar = new CargoModel(null, voluntario.getCargoNome());
-            cargoId = cargoDAL.buscarOuCriar(cargoParaBuscarOuCriar);
+            cargoId = cargoDAO.buscarOuCriar(cargoParaBuscarOuCriar);
         } else {
             throw new IllegalArgumentException("Nome ou ID do cargo é necessário para atualizar voluntário.");
         }
@@ -348,12 +348,12 @@ public class VoluntarioDAL {
 
         boolean credDeletado = true;
         if (voluntario.getCredenciaisCod() != null) {
-            credDeletado = credenciaisDAL.deletar(voluntario.getCredenciaisCod());
+            credDeletado = credenciaisDAO.deletar(voluntario.getCredenciaisCod());
         }
 
         boolean contDeletado = true;
         if (voluntario.getContatoCod() != null) {
-            contDeletado = contatoDAL.deleteByContato(voluntario.getContatoCod());
+            contDeletado = contatoDAO.deleteByContato(voluntario.getContatoCod());
         }
 
         if (!credDeletado || !contDeletado) {

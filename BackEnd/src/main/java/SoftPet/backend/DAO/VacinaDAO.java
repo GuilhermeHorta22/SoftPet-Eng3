@@ -1,4 +1,4 @@
-package SoftPet.backend.dal;
+package SoftPet.backend.DAO;
 
 import SoftPet.backend.config.SingletonDB;
 import SoftPet.backend.model.VacinaModel;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository // Anotação para o Spring identificar esta classe como um componente de persistência
-public class VacinaDAL {
+public class VacinaDAO {
 
     public VacinaModel criar(VacinaModel vacina) {
         String sql = "INSERT INTO VACINAS (VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE) VALUES (?, ?, ?, ?)";

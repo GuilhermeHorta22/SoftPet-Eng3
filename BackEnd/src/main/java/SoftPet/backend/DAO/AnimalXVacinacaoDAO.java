@@ -1,4 +1,4 @@
-package SoftPet.backend.dal;
+package SoftPet.backend.DAO;
 
 import SoftPet.backend.config.SingletonDB;
 import SoftPet.backend.model.AnimalXVacinacaoModel;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 
 @Repository
-public class AnimalXVacinacaoDAL {
+public class AnimalXVacinacaoDAO {
 
     /**
      * Registra uma nova aplicação de vacina no banco de dados.

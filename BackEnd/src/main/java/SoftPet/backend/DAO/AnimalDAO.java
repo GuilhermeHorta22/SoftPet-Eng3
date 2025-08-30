@@ -1,4 +1,4 @@
-package SoftPet.backend.dal;
+package SoftPet.backend.DAO;
 
 import SoftPet.backend.config.SingletonDB;
 import SoftPet.backend.model.AnimalModel;
@@ -11,10 +11,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Types; // Para java.sql.Types
-import java.util.Date; // Para conversão de java.sql.Date para java.util.Date
+
 
 @Repository
-public class AnimalDAL {
+public class AnimalDAO {
 
     public AnimalModel Adicionar(AnimalModel animal) {
         String sql = "INSERT INTO animais(" +

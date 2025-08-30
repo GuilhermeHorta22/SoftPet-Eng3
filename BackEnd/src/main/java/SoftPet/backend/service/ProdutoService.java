@@ -1,12 +1,10 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.ProdutoDAL;
+import SoftPet.backend.DAO.ProdutoDAO;
 
 import SoftPet.backend.dto.ProdutoDTO;
 import SoftPet.backend.model.ProdutoModel;
 import SoftPet.backend.util.Validation;
-
-import SoftPet.backend.model.ProdutoModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,7 @@ import java.util.List;
 public class ProdutoService {
 
     @Autowired
-    private ProdutoDAL produtoDAL;
+    private ProdutoDAO produtoDAO;
 
     public ProdutoModel addProduto(ProdutoDTO produtoDTO) throws Exception {
         ProdutoModel produto = produtoDTO.getProduto();
@@ -37,11 +35,11 @@ public class ProdutoService {
         if (!Validation.validarDataValidade(produto.getDataValidade()))
             throw new IllegalArgumentException("Data de validade inválida!");
 
-        return produtoDAL.addProduto(produto);
+        return produtoDAO.addProduto(produto);
     }
 
     public ProdutoDTO getProduto(Long id) {
-        return produtoDAL.findByProduto(id);
+        return produtoDAO.findByProduto(id);
     }
 
     public void updateProduto(Long id, ProdutoModel produto) throws Exception {
@@ -63,32 +61,32 @@ public class ProdutoService {
         if (!Validation.validarDataValidade(produto.getDataValidade()))
             throw new IllegalArgumentException("Data de validade inválida!");
 
-        ProdutoDTO produtoExistente = produtoDAL.findByProduto(id);
+        ProdutoDTO produtoExistente = produtoDAO.findByProduto(id);
         if (produtoExistente == null)
             throw new Exception("Produto com esse ID não foi encontrado!");
 
         produto.setId(id);
-        produtoDAL.updateProduto(produto);
+        produtoDAO.updateProduto(produto);
     }
 
     public void deleteProduto(Long id) throws Exception {
         if (id == null || id <= 0)
             throw new IllegalArgumentException("ID do produto inválido!");
 
-        ProdutoDTO produtoDelete = produtoDAL.findByProduto(id);
+        ProdutoDTO produtoDelete = produtoDAO.findByProduto(id);
 
         if (produtoDelete == null)
             throw new Exception("Produto com esse ID não existe!");
 
-        if (!produtoDAL.deleteByProduto(id))
+        if (!produtoDAO.deleteByProduto(id))
             throw new Exception("Erro ao deletar o produto!");
     }
 
     public List<ProdutoDTO> getAllProdutos() {
-        return produtoDAL.getAllProdutos();
+        return produtoDAO.getAllProdutos();
     }
     public List<ProdutoDTO> buscarProdutosPorTipo(String tipo) {
-        return produtoDAL.getProdutosPorTipo(tipo);
+        return produtoDAO.getProdutosPorTipo(tipo);
     }
 
 

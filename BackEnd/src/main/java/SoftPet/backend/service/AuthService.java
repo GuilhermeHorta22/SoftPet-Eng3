@@ -1,6 +1,6 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.UserDAL;
+import SoftPet.backend.DAO.UserDAO;
 import SoftPet.backend.model.UserModel;
 import SoftPet.backend.util.cpfValidator;
 import org.mindrot.jbcrypt.BCrypt;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class AuthService
 {
     @Autowired
-    private UserDAL userDAL;
+    private UserDAO userDAO;
 
     private static final int SALT_ROUNDS = 10;
     private static final String JWT_SECRET = "Gh1020!";
@@ -27,7 +27,7 @@ public class AuthService
         if(!cpfValidator.isCpfValido(cpf))
             throw new Exception("CPF inválido!");
 
-        UserModel user = userDAL.findByCPF(cpf);
+        UserModel user = userDAO.findByCPF(cpf);
         if(user != null && BCrypt.checkpw(senha, user.getSenha()))
         {
             Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
@@ -45,11 +45,11 @@ public class AuthService
         if(!cpfValidator.isCpfValido(cpf))
             throw new Exception("CPF inválido!");
 
-        if(userDAL.findByCPF(cpf) != null)
+        if(userDAO.findByCPF(cpf) != null)
             throw new Exception("Usuário já cadastrado com este CPF.");
 
         String hashed = BCrypt.hashpw(senha, BCrypt.gensalt(SALT_ROUNDS));
-        return userDAL.create(new UserModel(cpf, hashed));
+        return userDAO.create(new UserModel(cpf, hashed));
     }
 
     public void updateSenha(String cpf, String novaSenha) throws Exception
@@ -57,11 +57,11 @@ public class AuthService
         if(!cpfValidator.isCpfValido(cpf))
             throw new Exception("CPF inválido!");
 
-        if(userDAL.findByCPF(cpf) == null)
+        if(userDAO.findByCPF(cpf) == null)
             throw new Exception("Não existe esse usuário!");
 
         String hashed = BCrypt.hashpw(novaSenha, BCrypt.gensalt(SALT_ROUNDS));
-        userDAL.updateSenha(cpf, hashed);
+        userDAO.updateSenha(cpf, hashed);
     }
 
     public void deleteConta(String cpf) throws Exception
@@ -69,14 +69,14 @@ public class AuthService
         if (!cpfValidator.isCpfValido(cpf))
             throw new Exception("CPF inválido!");
 
-        if (userDAL.findByCPF(cpf) == null)
+        if (userDAO.findByCPF(cpf) == null)
             throw new Exception("Não existe esse usuário!");
 
-        userDAL.deleteByCPF(cpf);
+        userDAO.deleteByCPF(cpf);
     }
 
     public List<UserModel> getAllLogins() throws SQLException, ClassNotFoundException {
-        return userDAL.getAll();
+        return userDAO.getAll();
     }
 
     public static class LoginResult

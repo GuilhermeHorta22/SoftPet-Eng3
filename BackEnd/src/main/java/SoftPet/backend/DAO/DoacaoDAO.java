@@ -1,4 +1,4 @@
-package SoftPet.backend.dal;
+package SoftPet.backend.DAO;
 
 import SoftPet.backend.config.SingletonDB;
 import SoftPet.backend.dto.DoacaoDTO;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class DoacaoDAL
+public class DoacaoDAO
 {
     public DoacaoDTO findByDoacao(Long id)
     {

@@ -1,8 +1,8 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.AdocaoDAL;
-import SoftPet.backend.dal.AnimalDAL;
-import SoftPet.backend.dal.PessoaDAL;
+import SoftPet.backend.DAO.AdocaoDAO;
+import SoftPet.backend.DAO.AnimalDAO;
+import SoftPet.backend.DAO.PessoaDAO;
 import SoftPet.backend.dto.AdocaoDTO;
 import SoftPet.backend.dto.PessoaCompletoDTO;
 import SoftPet.backend.model.AdocaoModel;
@@ -17,11 +17,11 @@ import java.util.List;
 @Service
 public class AdocaoService {
     @Autowired
-    private AdocaoDAL adocaoDAL;
+    private AdocaoDAO adocaoDAO;
     @Autowired
-    private AnimalDAL animalDAL;
+    private AnimalDAO animalDAO;
     @Autowired
-    private PessoaDAL pessoaDAL;
+    private PessoaDAO pessoaDAO;
 
     public AdocaoModel addAdocao(AdocaoDTO adocaoDTO) {
         // Validação básica do DTO
@@ -34,7 +34,7 @@ public class AdocaoService {
         }
         System.out.println(adocaoDTO.getAnimal().getCod());
         // Busca animal - verifica se existe
-        AnimalModel animal = animalDAL.buscarPorCod(adocaoDTO.getAnimal().getCod());
+        AnimalModel animal = animalDAO.buscarPorCod(adocaoDTO.getAnimal().getCod());
         if (animal == null) {
             System.out.println(adocaoDTO.getAnimal().getCod());
             throw new IllegalArgumentException("Animal não encontrado!");
@@ -45,7 +45,7 @@ public class AdocaoService {
         }
 
         // Busca adotante - usando pe_cod do JSON
-        PessoaCompletoDTO pessoa = pessoaDAL.findById(adocaoDTO.getPessoa().getId());
+        PessoaCompletoDTO pessoa = pessoaDAO.findById(adocaoDTO.getPessoa().getId());
         if (pessoa == null) {
             throw new IllegalArgumentException("Adotante não encontrado!");
         }
@@ -56,25 +56,25 @@ public class AdocaoService {
         novaAdocao.setAn_cod(animal.getCod());
         novaAdocao.setPe_cod(pessoa.getPessoa().getId());
 
-        return adocaoDAL.NovaAdocao(novaAdocao);
+        return adocaoDAO.NovaAdocao(novaAdocao);
     }
 
     public List<AdocaoDTO> buscarAdocoes(String cpf, LocalDate dataInicio, LocalDate dataFim) {
-        return adocaoDAL.buscarAdocoes(cpf, dataInicio, dataFim);
+        return adocaoDAO.buscarAdocoes(cpf, dataInicio, dataFim);
     }
 
     public boolean upContrato(Long id, byte[] contrato)
     {
         AdocaoModel adocao = new AdocaoModel();
-        adocao=adocaoDAL.buscarAdocaoPorId(id).getAdocao();
+        adocao=adocaoDAO.buscarAdocaoPorId(id).getAdocao();
         if(adocao!=null)
         {
-            return adocaoDAL.atualizarContratoAdocao(id, contrato);
+            return adocaoDAO.atualizarContratoAdocao(id, contrato);
         }
         return false;
     }
     public byte[] buscarContratoPorIdAdocao(Long idAdocao) {
-        AdocaoDTO adocao = adocaoDAL.buscarAdocaoPorId(idAdocao);
+        AdocaoDTO adocao = adocaoDAO.buscarAdocaoPorId(idAdocao);
         if (adocao.getAdocao().getAdo_contrato() == null || adocao.getAdocao().getAdo_contrato().length == 0) {
             throw new RuntimeException("Contrato não encontrado para a adoção ID: " + idAdocao);
         }

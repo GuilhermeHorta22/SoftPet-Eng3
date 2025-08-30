@@ -1,6 +1,6 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.CargoDAL;
+import SoftPet.backend.DAO.CargoDAO;
 import SoftPet.backend.model.CargoModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,22 +11,22 @@ import java.util.List;
 public class CargoService {
 
     @Autowired
-    private CargoDAL cargoDAL;
+    private CargoDAO cargoDAO;
 
     public CargoModel findById(Long id) {
-        return cargoDAL.buscarPorId(id);
+        return cargoDAO.buscarPorId(id);
     }
 
     public CargoModel findByNome(String nome) {
-        return cargoDAL.buscarPorNome(nome);
+        return cargoDAO.buscarPorNome(nome);
     }
 
     public List<CargoModel> getAll() {
-        return cargoDAL.getAll();
+        return cargoDAO.getAll();
     }
 
     public CargoModel create(CargoModel cargo) {
-        Long id = cargoDAL.criar(cargo).getId();
+        Long id = cargoDAO.criar(cargo).getId();
         if (id != -1) {
             cargo.setId(id);
             return cargo;
@@ -35,11 +35,11 @@ public class CargoService {
     }
 
     public boolean update(CargoModel cargo) {
-        return cargoDAL.update(cargo);
+        return cargoDAO.update(cargo);
     }
 
     public boolean delete(Long id) {
-        return cargoDAL.delete(id);
+        return cargoDAO.delete(id);
     }
 
     /**
@@ -47,7 +47,7 @@ public class CargoService {
      * Retorna o objeto cargo com id preenchido.
      */
     public CargoModel buscarOuCriar(CargoModel cargo) {
-        Long id = cargoDAL.buscarOuCriar(cargo);
+        Long id = cargoDAO.buscarOuCriar(cargo);
         cargo.setId(id);
         return cargo;
     }

@@ -1,6 +1,6 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.CredenciaisDAL;
+import SoftPet.backend.DAO.CredenciaisDAO;
 import SoftPet.backend.model.CredenciaisModel;
 // Importe um CredenciaisRequestDTO se você o criar para receber dados do controller
 // import SoftPet.backend.dto.CredenciaisRequestDTO;
@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class CredenciaisService {
 
-    private final CredenciaisDAL credenciaisDAL;
+    private final CredenciaisDAO credenciaisDAO;
 
     @Autowired // Injeção de dependência via construtor (recomendado)
-    public CredenciaisService(CredenciaisDAL credenciaisDAL) {
-        this.credenciaisDAL = credenciaisDAL;
+    public CredenciaisService(CredenciaisDAO credenciaisDAO) {
+        this.credenciaisDAO = credenciaisDAO;
     }
 
     /**
@@ -34,7 +34,7 @@ public class CredenciaisService {
         // usando um serviço de criptografia (ex: BCryptPasswordEncoder do Spring Security).
         // Exemplo: credenciais.setSenha(passwordEncoder.encode(credenciais.getSenha()));
 
-        return credenciaisDAL.buscarOuCriar(credenciais);
+        return credenciaisDAO.buscarOuCriar(credenciais);
     }
 
     /**
@@ -47,7 +47,7 @@ public class CredenciaisService {
         if (id == null) {
             throw new IllegalArgumentException("O ID para busca não pode ser nulo.");
         }
-        CredenciaisModel credenciais = credenciaisDAL.findById(id);
+        CredenciaisModel credenciais = credenciaisDAO.findById(id);
         if (credenciais == null) {
             // Lançar uma exceção mais específica é uma boa prática
             throw new RuntimeException("Credenciais com ID " + id + " não encontradas."); // Ou EntityNotFoundException
@@ -72,7 +72,7 @@ public class CredenciaisService {
         // ATENÇÃO: A senha deve ser "hasheada" aqui também antes de passar para o DAL
         // Exemplo: credenciaisNovas.setSenha(passwordEncoder.encode(credenciaisNovas.getSenha()));
 
-        return credenciaisDAL.atualizar(credenciaisNovas, id);
+        return credenciaisDAO.atualizar(credenciaisNovas, id);
     }
 
     /**
@@ -88,7 +88,7 @@ public class CredenciaisService {
         // Garante que a credencial existe antes de tentar deletar
         buscarPorId(id);
 
-        boolean deletado = credenciaisDAL.deletar(id);
+        boolean deletado = credenciaisDAO.deletar(id);
         if (!deletado) {
             // O DAL pode retornar false se a deleção falhar por uma restrição de chave estrangeira
             // que não lançou uma SQLException (embora geralmente lance).

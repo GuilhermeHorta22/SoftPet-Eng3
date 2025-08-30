@@ -1,6 +1,6 @@
 package SoftPet.backend.controll;
 
-import SoftPet.backend.dal.AnimalXVacinacaoDAL;
+import SoftPet.backend.DAO.AnimalXVacinacaoDAO;
 import SoftPet.backend.dto.AnimalXVacinacaoDTO;
 import SoftPet.backend.model.AnimalXVacinacaoModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 public class AnimalXVacinaController {
 
     @Autowired
-    private AnimalXVacinacaoDAL dal;
+    private AnimalXVacinacaoDAO dal;
 
-    public AnimalXVacinaController(AnimalXVacinacaoDAL dal) {
+    public AnimalXVacinaController(AnimalXVacinacaoDAO dal) {
         this.dal = dal;
     }
 

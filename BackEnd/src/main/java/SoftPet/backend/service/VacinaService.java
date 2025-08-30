@@ -1,9 +1,9 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.AnimalDAL;
-import SoftPet.backend.dal.AnimalXVacinacaoDAL;
-import SoftPet.backend.dal.VacinaDAL;
-import SoftPet.backend.dal.VoluntarioDAL; // Importação adicionada
+import SoftPet.backend.DAO.AnimalDAO;
+import SoftPet.backend.DAO.AnimalXVacinacaoDAO;
+import SoftPet.backend.DAO.VacinaDAO;
+import SoftPet.backend.DAO.VoluntarioDAO; // Importação adicionada
 import SoftPet.backend.dto.VacinaRequestDTO;
 import SoftPet.backend.dto.VacinacaoRequestDTO; // Importação adicionada
 import SoftPet.backend.model.AnimalModel;       // Importação adicionada
@@ -13,24 +13,23 @@ import SoftPet.backend.model.VoluntarioModel; // Importação adicionada
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date; // Importação adicionada
 import java.util.List;
 
 @Service
 public class VacinaService {
 
-    private final VacinaDAL vacinaDAL;
+    private final VacinaDAO vacinaDAO;
     // Adicionando as outras dependências DAL necessárias
-    private final AnimalDAL animalDAL;
-    private final VoluntarioDAL voluntarioDAL;
-    private final AnimalXVacinacaoDAL animalXVacinacaoDAL;
+    private final AnimalDAO animalDAL;
+    private final VoluntarioDAO voluntarioDAO;
+    private final AnimalXVacinacaoDAO animalXVacinacaoDAO;
 
     @Autowired // Injeção de dependência via construtor atualizada
-    public VacinaService(VacinaDAL vacinaDAL, AnimalDAL animalDAL, VoluntarioDAL voluntarioDAL, AnimalXVacinacaoDAL animalXVacinacaoDAL) {
-        this.vacinaDAL = vacinaDAL;
+    public VacinaService(VacinaDAO vacinaDAO, AnimalDAO animalDAL, VoluntarioDAO voluntarioDAO, AnimalXVacinacaoDAO animalXVacinacaoDAO) {
+        this.vacinaDAO = vacinaDAO;
         this.animalDAL = animalDAL; // Atribuição adicionada
-        this.voluntarioDAL = voluntarioDAL; // Atribuição adicionada
-        this.animalXVacinacaoDAL = animalXVacinacaoDAL; // Atribuição adicionada
+        this.voluntarioDAO = voluntarioDAO; // Atribuição adicionada
+        this.animalXVacinacaoDAO = animalXVacinacaoDAO; // Atribuição adicionada
     }
 
     /**
@@ -56,7 +55,7 @@ public class VacinaService {
         novaVacina.setDataReferenciaLote(dto.getDataReferenciaLote());
         novaVacina.setTipoDosePadrao(dto.getTipoDosePadrao());
 
-        return vacinaDAL.criar(novaVacina);
+        return vacinaDAO.criar(novaVacina);
     }
 
     /**
@@ -69,7 +68,7 @@ public class VacinaService {
         if (id == null) {
             throw new IllegalArgumentException("O ID da vacina para busca não pode ser nulo.");
         }
-        VacinaModel vacina = vacinaDAL.buscarPorCod(id);
+        VacinaModel vacina = vacinaDAO.buscarPorCod(id);
         if (vacina == null) {
             throw new RuntimeException("Vacina com ID " + id + " não encontrada.");
         }
@@ -81,7 +80,7 @@ public class VacinaService {
      * Retorna uma lista de VacinaModel.
      */
     public List<VacinaModel> listarTodasVacinas() {
-        return vacinaDAL.listarTodas();
+        return vacinaDAO.listarTodas();
     }
 
     /**
@@ -112,7 +111,7 @@ public class VacinaService {
         vacinaExistente.setDataReferenciaLote(dto.getDataReferenciaLote());
         vacinaExistente.setTipoDosePadrao(dto.getTipoDosePadrao());
 
-        return vacinaDAL.atualizar(vacinaExistente);
+        return vacinaDAO.atualizar(vacinaExistente);
     }
 
     /**
@@ -126,7 +125,7 @@ public class VacinaService {
         }
         buscarVacinaPorId(id); // Garante que existe
 
-        boolean deletado = vacinaDAL.deletar(id);
+        boolean deletado = vacinaDAO.deletar(id);
         if (!deletado) {
             // O DAL.deletar já lança exceção se não puder deletar por dependência.
             // Esta condição pode ser para outros casos de falha não cobertos por exceção no DAL.
@@ -160,7 +159,7 @@ public class VacinaService {
             throw new Exception("A data de aplicação da vacina no animal é obrigatória.");
         }
 
-        VoluntarioModel voluntarioRegistrando = voluntarioDAL.findById(request.getVoluntarioRegistrandoCod());
+        VoluntarioModel voluntarioRegistrando = voluntarioDAO.findById(request.getVoluntarioRegistrandoCod());
         if (voluntarioRegistrando == null) {
             throw new Exception("Voluntário (registrando) com código " + request.getVoluntarioRegistrandoCod() + " não encontrado.");
         }
@@ -175,7 +174,7 @@ public class VacinaService {
         VacinaModel vacinaEntidade = this.buscarVacinaPorId(request.getVacinaCod()); // Reutiliza o método de busca desta classe
         // A linha acima já lança exceção se a vacina não for encontrada.
 
-        VoluntarioModel voluntarioAplicador = voluntarioDAL.findById(request.getVoluntarioAplicadorCod());
+        VoluntarioModel voluntarioAplicador = voluntarioDAO.findById(request.getVoluntarioAplicadorCod());
         if (voluntarioAplicador == null) {
             throw new Exception("Voluntário (aplicador) com código " + request.getVoluntarioAplicadorCod() + " não encontrado.");
         }
@@ -193,7 +192,7 @@ public class VacinaService {
         );
         aplicacao.setObservacao(observacaoParaRegistro);
 
-        return animalXVacinacaoDAL.registrarAplicacaoVacina(aplicacao);
+        return animalXVacinacaoDAO.registrarAplicacaoVacina(aplicacao);
     }
 
     private String construirObservacaoRelatorioParaAplicacao(AnimalModel animal, VacinaModel vacina,

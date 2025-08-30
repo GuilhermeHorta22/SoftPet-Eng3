@@ -1,4 +1,4 @@
-package SoftPet.backend.dal;
+package SoftPet.backend.DAO;
 
 import SoftPet.backend.config.SingletonDB;
 import SoftPet.backend.dto.AdocaoDTO;
@@ -18,7 +18,7 @@ import java.util.List;
 
 
 @Repository
-public class AdocaoDAL {
+public class AdocaoDAO {
     public AdocaoModel NovaAdocao(AdocaoModel adocao) {
 
         String sql = "INSERT INTO adocao(ado_dt, ado_contrato, pe_cod, an_cod) VALUES (?, ?, ?, ?)";

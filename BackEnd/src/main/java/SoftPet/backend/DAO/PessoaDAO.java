@@ -1,4 +1,4 @@
-package SoftPet.backend.dal;
+package SoftPet.backend.DAO;
 
 import SoftPet.backend.config.SingletonDB;
 import SoftPet.backend.dto.PessoaCompletoDTO;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class    PessoaDAL
+public class PessoaDAO
 {
     public static PessoaCompletoDTO findByDoador(String cpf)
     {

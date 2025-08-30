@@ -1,6 +1,6 @@
 package SoftPet.backend.service;
 
-import SoftPet.backend.dal.VoluntarioDAL;
+import SoftPet.backend.DAO.VoluntarioDAO;
 import SoftPet.backend.model.VoluntarioModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.util.List;
 public class VoluntarioService {
 
     @Autowired
-    private VoluntarioDAL voluntarioDAL;
+    private VoluntarioDAO voluntarioDAO;
 
     public VoluntarioModel cadastrarVoluntario(VoluntarioModel voluntario) throws InstantiationException, IllegalAccessException {
         // 1. Validações importantes ANTES de tentar criar:
@@ -25,8 +25,8 @@ public class VoluntarioService {
 
         // 2. [RECOMENDADO] Verificar se já existe um voluntário com o mesmo CPF
         //    Isso previne duplicidade baseada em um identificador de negócio.
-        //    Assumindo que seu VoluntarioDAL tem um método findByCPF.
-        VoluntarioModel existentePorCPF = voluntarioDAL.findByCPF(voluntario.getCpf());
+        //    Assumindo que seu VoluntarioDAO tem um método findByCPF.
+        VoluntarioModel existentePorCPF = voluntarioDAO.findByCPF(voluntario.getCpf());
         if (existentePorCPF != null) {
             throw new IllegalArgumentException("Já existe um voluntário cadastrado com o CPF: " + voluntario.getCpf());
         }
@@ -36,27 +36,27 @@ public class VoluntarioService {
         // O ID será gerado pelo banco de dados durante a operação de 'create'.
 
         // 3. Se todas as validações passarem, prossiga com a criação
-        return voluntarioDAL.create(voluntario); // O DAL.create() irá inserir e retornar o voluntário com o ID gerado.
+        return voluntarioDAO.create(voluntario); // O DAL.create() irá inserir e retornar o voluntário com o ID gerado.
     }
 
     public List<VoluntarioModel> listarTodos() {
-        return voluntarioDAL.getAll();
+        return voluntarioDAO.getAll();
     }
 
     public VoluntarioModel buscarPorCPF(String cpf) {
-        return voluntarioDAL.findByCPF(cpf);
+        return voluntarioDAO.findByCPF(cpf);
     }
 
     public boolean removerPorCPF(String cpf) {
-        return voluntarioDAL.deleteByCPF(cpf);
+        return voluntarioDAO.deleteByCPF(cpf);
     }
 
     public boolean atualizarVoluntario(VoluntarioModel voluntario) {
-        return voluntarioDAL.atualizar(voluntario);
+        return voluntarioDAO.atualizar(voluntario);
     }
 
     public VoluntarioModel buscarPorId(Long id) {
-        return voluntarioDAL.buscarPorId(id);
+        return voluntarioDAO.buscarPorId(id);
     }
 
 }

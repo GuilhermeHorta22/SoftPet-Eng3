@@ -1,15 +1,11 @@
 package SoftPet.backend.controll;
 
-import SoftPet.backend.config.SingletonDB;
-import SoftPet.backend.dal.UserDAL;
 import SoftPet.backend.model.UserModel;
 import SoftPet.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import SoftPet.backend.service.AuthService;
 
 import java.sql.SQLException;
 import java.util.List;
