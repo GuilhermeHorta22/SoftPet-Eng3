@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ADAPV - Banir Adotante</title>
+  <link rel="website icon" type="png" href="../../public/images/patinha.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            carmesim: '#A6032F',
+            areia: '#BCAF9E',
+            noturno: '#0B1926',
+            pastel: '#D9CAB8',
+            neve: '#F2F2F2',
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="flex h-screen bg-neve font-sans text-noturno">
+  <!-- Sidebar -->
+  <script src="../../public/js/menu.js"></script>
+
+  <!-- Conteúdo principal -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold text-carmesim">Banir Adotante</h1>
+      <a href="../../views/viewGeral/home.html"
+         class="bg-gray-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-700 transition-all">
+        Voltar
+      </a>
+    </div>
+
+    <section class="mb-8">
+      <label for="adotanteCpf" class="block font-semibold mb-2">Informe o CPF do adotante:</label>
+      <div class="flex items-center gap-2">
+        <input id="adotanteCpf" type="text" class="border border-gray-300 rounded-lg p-3 w-64" placeholder="Ex: 12345678900" />
+        <button id="btnBuscar" class="bg-carmesim text-white px-6 py-3 rounded-full font-semibold hover:bg-[#8a0128] transition-all">
+          Buscar por CPF
+        </button>
+      </div>
+    </section>
+
+    <div class="overflow-x-auto shadow-lg rounded-lg">
+      <table class="min-w-full bg-white border border-gray-200">
+        <thead class="bg-areia text-noturno">
+          <tr>
+            <th class="px-4 py-2 text-left">Nome</th>
+            <th class="px-4 py-2 text-left">CPF</th>
+            <th class="px-4 py-2 text-left">Email</th>
+            <th class="px-4 py-2 text-left">Telefone</th>
+            <th class="px-4 py-2 text-left">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaAdotante" class="divide-y divide-gray-200"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    async function consultarAdotantePorCpf(cpf) {
+      const url = `http://localhost:8080/doador/${cpf}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          alert("Adotante não encontrado.");
+          limparTabela();
+          return;
+        }
+
+        const adotante = await response.json();
+        preencherTabela([adotante]);
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao conectar com o servidor.");
+      }
+    }
+
+    function preencherTabela(adotantes) {
+      const tabela = document.getElementById("tabelaAdotante");
+      tabela.innerHTML = "";
+
+      adotantes.forEach(a => {
+        const statusAtivo = a.pessoa.status === true;
+
+        const acaoHtml = statusAtivo
+          ? `<a href="../../views/viewLuan/ExclusaoDiretaAdotante.html?id=${a.pessoa.cpf}"
+                class="text-red-600 hover:underline">Banir</a>`
+          : `<button onclick="reativarAdotante('${a.pessoa.cpf}')"
+                class="text-green-600 hover:underline">Reativar</button>`;
+
+        const linha = `
+          <tr>
+            <td class="px-4 py-2">${a.pessoa.nome}</td>
+            <td class="px-4 py-2">${a.pessoa.cpf}</td>
+            <td class="px-4 py-2">${a.contato.email}</td>
+            <td class="px-4 py-2">${a.contato.telefone}</td>
+            <td class="px-4 py-2">${acaoHtml}</td>
+          </tr>
+        `;
+        tabela.insertAdjacentHTML("beforeend", linha);
+      });
+    }
+
+    async function reativarAdotante(cpf) {
+      const confirmacao = confirm("Tem certeza que deseja reativar este adotante?");
+      if (!confirmacao) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/doador/reativar/${cpf}`, {
+          method: "PUT"
+        });
+
+        if (response.ok) {
+          alert("Adotante reativado com sucesso.");
+          consultarAdotantePorCpf(cpf); // Recarrega a tabela atualizada
+        } else {
+          const erro = await response.text();
+          alert("Erro ao reativar adotante: " + erro);
+        }
+      } catch (error) {
+        console.error("Erro ao reativar adotante:", error);
+        alert("Erro ao se conectar com o servidor.");
+      }
+    }
+
+
+
+
+    function limparTabela() {
+      document.getElementById("tabelaAdotante").innerHTML = "";
+    }
+
+    document.getElementById("btnBuscar").addEventListener("click", () => {
+      const cpf = document.getElementById("adotanteCpf").value.trim();
+      if (cpf) {
+        consultarAdotantePorCpf(cpf);
+      } else {
+        alert("Por favor, informe o CPF do adotante.");
+      }
+    });
+
+    lucide.createIcons();
+    document.getElementById("adotanteCpf").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        const cpf = event.target.value.trim();
+        if (cpf) {
+          consultarAdotantePorCpf(cpf);
+        } else {
+          alert("Por favor, informe o CPF do adotante.");
+        }
+      }
+    });
+
+
+  </script>
+</body>
+</html>

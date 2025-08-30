@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ADAPV - Banir Adotante</title>
+  <link rel="website icon" type="png" href="../../public/images/patinha.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            carmesim: '#A6032F',
+            areia: '#BCAF9E',
+            noturno: '#0B1926',
+            pastel: '#D9CAB8',
+            neve: '#F2F2F2',
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="flex h-screen bg-neve font-sans text-noturno">
+  <script src="../../public/js/menu.js"></script>
+
+  <main class="flex-1 bg-neve p-10 overflow-auto">
+    <h1 class="text-3xl font-bold mb-6 text-carmesim">Banir Adotante</h1>
+
+    <form id="formBanirAdotante" onsubmit="event.preventDefault(); banirAdotante();">
+      <div class="grid grid-cols-1 gap-4 mb-6">
+        <div>
+          <label class="block font-semibold mb-1">* ID do Adotante</label>
+          <input type="number" id="idAdotante" class="w-full p-2 border rounded-lg bg-gray-200" readonly required>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">* Nome</label>
+          <input type="text" id="nomeAdotante" class="w-full p-2 border rounded-lg bg-gray-200" readonly required>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">* CPF</label>
+          <input type="text" id="cpfAdotante" class="w-full p-2 border rounded-lg bg-gray-200" readonly required>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">* Email</label>
+          <input type="text" id="emailAdotante" class="w-full p-2 border rounded-lg bg-gray-200" readonly required>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">* Telefone</label>
+          <input type="text" id="telefoneAdotante" class="w-full p-2 border rounded-lg bg-gray-200" readonly required>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-4 mt-6">
+        <button id="btnBanir" type="button" onclick="banirAdotantePorCpf()" class="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all">
+          Confirmar Banimento
+        </button>
+
+        <button id="btnReativar" type="button" onclick="reativarAdotantePorCpf()" class="hidden bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-all">
+          Reativar Adotante
+        </button>
+
+        <button type="button" onclick="voltarParaBanir()" class="bg-yellow-500 text-white px-6 py-2 rounded-full hover:bg-yellow-600 transition-all">
+          Cancelar
+        </button>
+
+        <button type="button" onclick="voltarParaInicio()" class="bg-gray-400 text-white px-6 py-2 rounded-full hover:bg-gray-600 transition-all">
+          Voltar
+        </button>
+
+      </div>
+    </form>
+  </main>
+
+  <script>
+    function voltarParaInicio() {
+      window.location.href = "../../views/viewGeral/home.html";
+    }
+
+    function voltarParaBanir() {
+      window.location.href = "../../views/viewLuan/BanirAdotante.html";
+    }
+
+    function obterParametroUrl(nome) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(nome);
+    }
+
+    async function carregarAdotantePorId(cpf) {
+      try {
+        const response = await fetch(`http://localhost:8080/doador/${cpf}`);
+        if (!response.ok) {
+          alert("Adotante não encontrado.");
+          return;
+        }
+
+        const adotante = await response.json();
+        console.log("STATUS:", adotante.pessoa.status);
+
+
+        document.getElementById("idAdotante").value = adotante.pessoa.id;
+        document.getElementById("nomeAdotante").value = adotante.pessoa.nome;
+        document.getElementById("cpfAdotante").value = adotante.pessoa.cpf;
+        document.getElementById("emailAdotante").value = adotante.contato.email;
+        document.getElementById("telefoneAdotante").value = adotante.contato.telefone;
+
+        // Mostrar botões conforme status
+        const botaoBanir = document.getElementById("btnBanir");
+        const botaoReativar = document.getElementById("btnReativar");
+
+        if (adotante.pessoa.status === false) {
+          botaoBanir.classList.add("hidden");
+          botaoReativar.classList.remove("hidden");
+        } else {
+          botaoBanir.classList.remove("hidden");
+          botaoReativar.classList.add("hidden");
+        }
+
+      } catch (error) {
+        console.error("Erro ao carregar adotante:", error);
+        alert("Erro ao buscar dados do adotante.");
+      }
+    }
+
+    async function banirAdotantePorCpf() {
+      const cpf = document.getElementById("cpfAdotante").value;
+      const confirmacao = confirm("Tem certeza que deseja banir este adotante?");
+      if (!confirmacao) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/doador/logico/${cpf}`, {
+          method: "DELETE"
+        });
+
+        if (response.ok) {
+          alert("Adotante banido com sucesso.");
+          location.reload();
+        } else {
+          const msg = await response.text();
+          alert("Erro ao banir adotante: " + msg);
+        }
+      } catch (error) {
+        console.error("Erro ao banir adotante:", error);
+        alert("Erro ao se conectar com o servidor.");
+      }
+    }
+
+    async function reativarAdotantePorCpf() {
+      const cpf = document.getElementById("cpfAdotante").value;
+      const confirmacao = confirm("Deseja reativar este adotante?");
+      if (!confirmacao) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/doador/reativar/${cpf}`, {
+          method: "PUT"
+        });
+
+        if (response.ok) {
+          alert("Adotante reativado com sucesso.");
+          location.reload();
+        } else {
+          const msg = await response.text();
+          alert("Erro ao reativar adotante: " + msg);
+        }
+      } catch (error) {
+        console.error("Erro ao reativar adotante:", error);
+        alert("Erro ao se conectar com o servidor.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const id = obterParametroUrl("id");
+      if (id) {
+        carregarAdotantePorId(id);
+      }
+    });
+
+  lucide.createIcons();
+</script>
+</body>
+</html>
