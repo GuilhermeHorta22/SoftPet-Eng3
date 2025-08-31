@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 };
 
-                const response = await fetch('http://localhost:8080/doador/cadastro', {
+                const response = await fetch('http://localhost:8080/pessoa/cadastro', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -149,7 +149,7 @@ async function buscarDoador()
 
     try 
     {
-        const response = await fetch(`http://localhost:8080/doador/${cpf}`);
+        const response = await fetch(`http://localhost:8080/pessoa/${cpf}`);
 
         if(!response.ok)
             throw new Error('Doador não encontrado.');

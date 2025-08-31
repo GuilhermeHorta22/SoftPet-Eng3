@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tabela = document.getElementById('tabela-doadores');
 
-    fetch('http://localhost:8080/doador/listar')
+    fetch('http://localhost:8080/pessoa/listar')
     .then(res => res.json())
     .then(lista => {
         if(!Array.isArray(lista))
@@ -40,7 +40,7 @@ function excluirDoador(cpf)
 {
     if(confirm('Tem certeza que deseja excluir este doador?')) 
     {
-        fetch(`http://localhost:8080/doador/${cpf}`, {
+        fetch(`http://localhost:8080/pessoa/${cpf}`, {
             method: 'DELETE'
         })
         .then(response => {

@@ -24,117 +24,120 @@ public class PessoaService
     @Autowired
     private EnderecoDAO enderecoDAO;
 
-    public PessoaModel addDoador(PessoaCompletoDTO doador) throws Exception
+    public PessoaModel addPessoa(PessoaCompletoDTO pessoa) throws Exception
     {
-        if(!cpfValidator.isCpfValido(doador.getPessoa().getCpf()))
+        if(!cpfValidator.isCpfValido(pessoa.getPessoa().getCpf()))
             throw new Exception("CPF inválido!");
 
-        if(pessoaDAO.findByDoador(doador.getPessoa().getCpf()) != null)
+        if(pessoaDAO.findByPessoa(pessoa.getPessoa().getCpf()) != null)
             throw new Exception("Usuário já cadastrado!");
 
-        if(!Validation.validarNomeCompleto(doador.getPessoa().getNome()))
+        if(!Validation.validarNomeCompleto(pessoa.getPessoa().getNome()))
             throw new Exception("Digite o nome completo corretamente!");
 
-        if(!Validation.validarTelefone(doador.getContato().getTelefone()))
+        if(!Validation.validarTelefone(pessoa.getContato().getTelefone()))
             throw new Exception("Telefone inválido! Ex: (11) 91234-5678");
 
-        if(!Validation.validarRG(doador.getPessoa().getRg()))
+        if(!Validation.validarRG(pessoa.getPessoa().getRg()))
             throw new Exception("RG inválido!");
 
-        if(!Validation.validarCEP(doador.getEndereco().getCep()))
+        if(!Validation.validarCEP(pessoa.getEndereco().getCep()))
             throw new Exception("CEP inválido! Ex: 12345-678");
 
-        ContatoModel novoContato = contatoDAO.addContato(doador.getContato());
-        EnderecoModel novoEndereco = enderecoDAO.addEndereco(doador.getEndereco());
+        ContatoModel novoContato = contatoDAO.addContato(pessoa.getContato());
+        EnderecoModel novoEndereco = enderecoDAO.addEndereco(pessoa.getEndereco());
 
-        PessoaModel novoDoador = doador.getPessoa();
-        novoDoador.setId_contato(novoContato.getId());
-        novoDoador.setId_endereco(novoEndereco.getId());
+        PessoaModel novaPessoa = pessoa.getPessoa();
+        novaPessoa.setId_contato(novoContato.getId());
+        novaPessoa.setId_endereco(novoEndereco.getId());
 
-        PessoaModel doadorFinal = pessoaDAO.addDoador(novoDoador);
-        return doadorFinal;
+        PessoaModel pessoaFinal = pessoaDAO.addPessoa(novaPessoa);
+        return pessoaFinal;
     }
 
 
-    public PessoaCompletoDTO getDoadorCpf(String cpf)
+    public PessoaCompletoDTO getPessoaCpf(String cpf)
     {
-        if(pessoaDAO.findByDoador(cpf) != null)
-            return pessoaDAO.findByDoador(cpf);
+        if(pessoaDAO.findByPessoa(cpf) != null)
+            return pessoaDAO.findByPessoa(cpf);
         return null;
     }
 
-    public void updateDoador(String cpf, PessoaModel doador, ContatoModel contato, EnderecoModel endereco) throws Exception
+    public void updatePessoa(String cpf, PessoaModel pessoa, ContatoModel contato, EnderecoModel endereco) throws Exception
     {
         if(!cpfValidator.isCpfValido(cpf))
             throw new Exception("CPF inválido!");
 
-        if(!Validation.validarNomeCompleto(doador.getNome()))
+        if(!Validation.validarNomeCompleto(pessoa.getNome()))
             throw new Exception("Digite o nome completo corretamente!");
 
         if(!Validation.validarTelefone(contato.getTelefone()))
             throw new Exception("Telefone inválido! Ex: (11) 91234-5678");
 
-        if(!Validation.validarRG(doador.getRg()))
+        if(!Validation.validarRG(pessoa.getRg()))
             throw new Exception("RG inválido!");
 
         if(!Validation.validarCEP(endereco.getCep()))
             throw new Exception("CEP inválido! Ex: 12345-678");
 
-        PessoaCompletoDTO doadorExistente = pessoaDAO.findByDoador(cpf);
-        if(doadorExistente == null)
+        PessoaCompletoDTO pessoaExistente = pessoaDAO.findByPessoa(cpf);
+        if(pessoaExistente == null)
             throw new Exception("Não existe esse usuário!");
+        pessoa.setStatus(pessoaExistente.getPessoa().getStatus());
 
-        doador.setId_contato(doadorExistente.getContato().getId());
-        doador.setId_endereco(doadorExistente.getEndereco().getId());
+        pessoa.setId_contato(pessoaExistente.getContato().getId());
+        pessoa.setId_endereco(pessoaExistente.getEndereco().getId());
 
-        pessoaDAO.updateDoador(cpf,doador);
+        pessoaDAO.updatePessoa(cpf, pessoa);
         ContatoModel contatoAtualizado = new ContatoModel();
-        contatoAtualizado.setId(doador.getId_contato());
+        contatoAtualizado.setId(pessoa.getId_contato());
         contatoAtualizado.setTelefone(contato.getTelefone());
         contatoAtualizado.setEmail(contato.getEmail());
 
         contatoDAO.updateContato(contatoAtualizado);
-        enderecoDAO.updateEndereco(doador.getId_endereco(),endereco);
+        enderecoDAO.updateEndereco(pessoa.getId_endereco(),endereco);
     }
 
-    public void deleteDoador(String cpf) throws Exception
+    public void deletePessoa(String cpf) throws Exception
     {
         if(!cpfValidator.isCpfValido(cpf))
             throw new Exception("CPF inválido!");
 
-        PessoaCompletoDTO doadorDelete = pessoaDAO.findByDoador(cpf);
+        PessoaCompletoDTO pessoaDelete = pessoaDAO.findByPessoa(cpf);
 
-        if(doadorDelete == null)
+        if(pessoaDelete == null)
             throw new Exception("Não existe esse usuário!");
 
-        if(!pessoaDAO.deleteFisicoByDoador(cpf))
-            throw new Exception("Erro ao deletar um doador!");
+        if(!pessoaDAO.deleteFisicoByPessoa(cpf))
+            throw new Exception("Erro ao deletar uma pessoa!");
 
-        contatoDAO.deleteByContato(doadorDelete.getContato().getId());
-        enderecoDAO.deleteByEndereco(doadorDelete.getEndereco().getId());
+        contatoDAO.deleteByContato(pessoaDelete.getContato().getId());
+        enderecoDAO.deleteByEndereco(pessoaDelete.getEndereco().getId());
     }
 
-    public void excluirLogicamente(String cpf) throws Exception {
-        PessoaCompletoDTO doador = pessoaDAO.findByDoador(cpf);
-        if (doador == null)
-            throw new Exception("Doador não encontrado!");
+    public void excluirLogicamente(String cpf) throws Exception
+    {
+        PessoaCompletoDTO pessoaDTO = pessoaDAO.findByPessoa(cpf);
+        if(pessoaDTO == null)
+            throw new Exception("Pessoa não encontrado!");
 
-        PessoaModel pessoa = doador.getPessoa();
+        PessoaModel pessoa = pessoaDTO.getPessoa();
         pessoa.setStatus(false);
-        pessoaDAO.updateDoador(cpf, pessoa);
+        pessoaDAO.updatePessoa(cpf, pessoa);
     }
 
-    public void reativarDoador(String cpf) throws Exception {
-        PessoaCompletoDTO doador = pessoaDAO.findByDoador(cpf);
-        if (doador == null)
-            throw new Exception("Doador não encontrado!");
+    public void reativarPessoa(String cpf) throws Exception
+    {
+        PessoaCompletoDTO pessoaDTO = pessoaDAO.findByPessoa(cpf);
+        if(pessoaDTO == null)
+            throw new Exception("Pessoa não encontrado!");
 
-        PessoaModel pessoa = doador.getPessoa();
+        PessoaModel pessoa = pessoaDTO.getPessoa();
         pessoa.setStatus(true);
-        pessoaDAO.updateDoador(cpf, pessoa);
+        pessoaDAO.updatePessoa(cpf, pessoa);
     }
 
-    public List<PessoaCompletoDTO> getAllDoador()
+    public List<PessoaCompletoDTO> getAllPessoa()
     {
         return pessoaDAO.getAll();
     }

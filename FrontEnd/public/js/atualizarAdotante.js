@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  fetch(`http://localhost:8080/doador/${cpf}`)
+  fetch(`http://localhost:8080/pessoa/${cpf}`)
     .then(res => res.json())
     .then(data => {
       document.getElementById('nomeAtt').value = (data.pessoa?.nome || '').toLocaleUpperCase();
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       };
 
-      const response = await fetch('http://localhost:8080/doador/alterar', {
+      const response = await fetch('http://localhost:8080/pessoa/alterar', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

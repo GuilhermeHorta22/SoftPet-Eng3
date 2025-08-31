@@ -38,7 +38,7 @@ document.getElementById('cadastroFormAdotante').addEventListener('submit', async
       }
     };
 
-    const response = await fetch('http://localhost:8080/doador/cadastro', {
+    const response = await fetch('http://localhost:8080/pessoa/cadastro', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
