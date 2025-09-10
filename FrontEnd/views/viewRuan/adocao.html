@@ -229,7 +229,7 @@
 
 
         try {
-          const response = await fetch(`http://localhost:8080/doador/${cpf}`);
+          const response = await fetch(`http://localhost:8080/pessoa/${cpf}`);
 
           if (!response.ok) {
             throw new Error("CPF inválido ou não encontrado");
