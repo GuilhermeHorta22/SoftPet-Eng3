@@ -63,7 +63,7 @@
 
   <script>
     async function consultarAdotantePorCpf(cpf) {
-      const url = `http://localhost:8080/doador/${cpf}`;
+      const url = `http://localhost:8080/pessoa/${cpf}`;
       try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -83,7 +83,7 @@
       const mensagem = `${nome}, a data de vacinação do seu pet está próxima! Agradecimento ADAPV.`;
 
       try {
-        const response = await fetch(`http://localhost:8080/doador/alerta`, {
+        const response = await fetch(`http://localhost:8080/pessoa/alerta`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

@@ -94,7 +94,7 @@
 
     async function carregarAdotantePorId(cpf) {
       try {
-        const response = await fetch(`http://localhost:8080/doador/${cpf}`);
+        const response = await fetch(`http://localhost:8080/pessoa/${cpf}`);
         if (!response.ok) {
           alert("Adotante não encontrado.");
           return;
@@ -134,7 +134,7 @@
       if (!confirmacao) return;
 
       try {
-        const response = await fetch(`http://localhost:8080/doador/logico/${cpf}`, {
+        const response = await fetch(`http://localhost:8080/pessoa/logico/${cpf}`, {
           method: "DELETE"
         });
 
@@ -157,7 +157,7 @@
       if (!confirmacao) return;
 
       try {
-        const response = await fetch(`http://localhost:8080/doador/reativar/${cpf}`, {
+        const response = await fetch(`http://localhost:8080/pessoa/reativar/${cpf}`, {
           method: "PUT"
         });
 

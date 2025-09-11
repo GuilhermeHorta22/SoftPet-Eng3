@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf9bcf92-d2a8-460d-b24a-ade1c64d067b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/SoftPet/backend/dal/AdocaoDAL.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/SoftPet/backend/dal/AdocaoDAL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/SoftPet/backend/dto/AdocaoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/SoftPet/backend/dto/AdocaoDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/SoftPet/backend/service/AdocaoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/SoftPet/backend/service/AdocaoService.java" afterDir="false" />
-    </list>
+    <list default="true" id="bf9bcf92-d2a8-460d-b24a-ade1c64d067b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -47,7 +43,8 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "wilker",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/wilker/hd/Faculdade/5 termo/Engenharia de software/SoftPet_Eng2-wilker/SoftPet_Eng2/BackEnd",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -70,11 +67,12 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
-        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
       </set>
     </attachedChunks>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="bf9bcf92-d2a8-460d-b24a-ade1c64d067b" name="Changes" comment="" />
@@ -87,6 +85,7 @@
       <workItem from="1748642753455" duration="12000" />
       <workItem from="1748643061209" duration="58000" />
       <workItem from="1748643137366" duration="494000" />
+      <workItem from="1757543463101" duration="107000" />
     </task>
     <servers />
   </component>

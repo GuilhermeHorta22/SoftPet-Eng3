@@ -65,7 +65,7 @@
 
   <script>
     async function consultarAdotantePorCpf(cpf) {
-      const url = `http://localhost:8080/doador/${cpf}`;
+      const url = `http://localhost:8080/pessoa/${cpf}`;
 
       try {
         const response = await fetch(url);
@@ -114,7 +114,7 @@
       if (!confirmacao) return;
 
       try {
-        const response = await fetch(`http://localhost:8080/doador/reativar/${cpf}`, {
+        const response = await fetch(`http://localhost:8080/pessoa/reativar/${cpf}`, {
           method: "PUT"
         });
 
