@@ -63,7 +63,7 @@ public class ProdutoDAO {
         String sql = "INSERT INTO produtos (p_tipo, p_unidade_medida, p_data_validade, p_descricao, p_qntd_estoque) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, produto.getTipo());
+            stmt.setString(1, produto.getTipo().toUpperCase());
             stmt.setString(2, produto.getUnidadeMedida());
             stmt.setDate(3, Date.valueOf(produto.getDataValidade()));
             stmt.setString(4, produto.getDescricao());

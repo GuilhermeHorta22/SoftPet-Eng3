@@ -38,9 +38,10 @@
         </label>
         <select id="tipo" class="w-full p-2 border rounded-lg" required>
           <option value="" disabled selected>Selecione...</option>
+          <option value="RAÇÃO">Ração</option>
+          <option value="PRODUTO DE LIMPEZA">Produto de limpeza</option>
           <option value="MEDICAMENTO">Medicamento</option>
-          <option value="LIMPEZA">Limpeza</option>
-          <option value="ALIMENTACAO">Alimentação</option>
+          <option value="VACINA">Vacina</option>
         </select>
       </div>
 
@@ -99,7 +100,7 @@
     form.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      const tipo = document.getElementById("tipo").value.trim();
+      const tipo = document.getElementById("tipo").value.toUpperCase();
       const unidadeMedida = document.getElementById("unidade_medida").value;
       const dataValidade = document.getElementById("data_validade").value;
       const descricao = document.getElementById("descricao").value.trim();
@@ -110,7 +111,7 @@
       msgEl.classList.remove("text-red-600", "text-green-700");
 
       // Validação: tipo deve conter apenas letras e espaços (acentos permitidos)
-      const tipoValido = /^[A-Za-zÀ-ÿ\s]+$/.test(tipo);
+      var tipoValido = /^[A-Za-zÀ-ÿ\s]+$/.test(tipo);
 
       // Validação: unidade de medida permitida
       const unidadesPermitidas = ["LITROS", "KG", "GRAMAS", "ML", "UNIDADE"];

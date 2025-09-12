@@ -80,6 +80,14 @@ public class DoacaoDAO
                 if(rs.next())
                     doacao.setId(rs.getLong(1));
             }
+
+            // 2. Atualiza a quantidade do produto
+            String sqlUpdate = "UPDATE produtos SET p_qntd_estoque = p_qntd_estoque + ? WHERE p_tipo = ?";
+            try(PreparedStatement stmt2 = SingletonDB.getConexao().getPreparedStatement(sqlUpdate)) {
+                stmt2.setInt(1, doacao.getQtde());
+                stmt2.setString(2, doacao.getTipo());
+                stmt2.executeUpdate();
+            }
         }
         catch(SQLException e)
         {
@@ -114,11 +122,30 @@ public class DoacaoDAO
 
     public Boolean deleteByDoacao(Long codigo)
     {
-        String sql = "DELETE FROM doacoes WHERE doa_cod = ?";
-        try(PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql))
+        try
         {
-            stmt.setLong(1, codigo);
-            return stmt.executeUpdate() > 0;
+            // 1. Atualiza o estoque do produto com base no tipo da doação
+            String sqlUpdate = "UPDATE produtos p " +
+                    "SET p_qntd_estoque = p_qntd_estoque - (" +
+                    "  SELECT d.doa_qtde FROM doacoes d WHERE d.doa_cod = ?" +
+                    ") " +
+                    "WHERE p.p_tipo = (" +
+                    "  SELECT d.doa_tipo FROM doacoes d WHERE d.doa_cod = ?" +
+                    ")";
+            try(PreparedStatement stmtUpdate = SingletonDB.getConexao().getPreparedStatement(sqlUpdate))
+            {
+                stmtUpdate.setLong(1, codigo);
+                stmtUpdate.setLong(2, codigo);
+                stmtUpdate.executeUpdate();
+            }
+
+            // 2. Deleta a doação
+            String sqlDelete = "DELETE FROM doacoes WHERE doa_cod = ?";
+            try(PreparedStatement stmtDelete = SingletonDB.getConexao().getPreparedStatement(sqlDelete))
+            {
+                stmtDelete.setLong(1, codigo);
+                return stmtDelete.executeUpdate() > 0;
+            }
         }
         catch(SQLException e)
         {
