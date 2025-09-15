@@ -17,7 +17,7 @@ public class DoacaoDAO
     {
         DoacaoDTO doacaoDTO = null;
         String sql = "SELECT d.doa_cod, d.doa_tipo, d.doa_qtde, d.doa_nome, d.doa_data, d.doa_validade, d.doa_unidade, d.pe_cod, " +
-                "p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg " +
+                "p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, p.notificar " +
                 "FROM doacoes d " +
                 "INNER JOIN pessoa p ON d.pe_cod = p.pe_cod " +
                 "WHERE d.doa_cod = ?";
@@ -46,7 +46,8 @@ public class DoacaoDAO
                         rs.getString("pe_profissao"),
                         rs.getLong("con_cod"),
                         rs.getLong("en_id"),
-                        rs.getString("pe_rg")
+                        rs.getString("pe_rg"),
+                        rs.getBoolean("notificar")
                 );
 
                 doacaoDTO = new DoacaoDTO(doacao,doador);
@@ -159,7 +160,7 @@ public class DoacaoDAO
         List<DoacaoDTO> list = new ArrayList<>();
 
         String sql = "SELECT d.doa_cod, d.doa_tipo, d.doa_qtde, d.doa_nome, d.doa_data, d.doa_validade, d.doa_unidade, d.pe_cod, " +
-                "p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg " +
+                "p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, p.notificar " +
                 "FROM doacoes d " +
                 "JOIN pessoa p ON d.pe_cod = p.pe_cod";
 
@@ -186,7 +187,8 @@ public class DoacaoDAO
                         rs.getString("pe_profissao"),
                         rs.getLong("con_cod"),
                         rs.getLong("en_id"),
-                        rs.getString("pe_rg")
+                        rs.getString("pe_rg"),
+                        rs.getBoolean("notificar")
                 );
 
                 DoacaoDTO dto = new DoacaoDTO(doacao, doador);

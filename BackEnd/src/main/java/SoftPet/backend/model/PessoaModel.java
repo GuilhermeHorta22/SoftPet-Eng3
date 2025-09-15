@@ -10,8 +10,9 @@ public class PessoaModel
     private Long id_contato;
     private Long id_endereco;
     private String rg;
+    private boolean notificar;
 
-    public PessoaModel(Long id, String cpf, String nome, Boolean status, String profissao, Long id_contato, Long id_endereco, String rg)
+    public PessoaModel(Long id, String cpf, String nome, Boolean status, String profissao, Long id_contato, Long id_endereco, String rg, boolean notificar)
     {
         this.id = id;
         this.cpf = cpf;
@@ -21,8 +22,9 @@ public class PessoaModel
         this.id_contato = id_contato;
         this.id_endereco = id_endereco;
         this.rg = rg;
+        this.notificar = notificar;
     }
-    public PessoaModel(String cpf, String nome, Boolean status, String profissao, Long id_contato, Long id_endereco, String rg)
+    public PessoaModel(String cpf, String nome, Boolean status, String profissao, Long id_contato, Long id_endereco, String rg, boolean notificar)
     {
         this.cpf = cpf;
         this.nome = nome;
@@ -31,10 +33,11 @@ public class PessoaModel
         this.id_contato = id_contato;
         this.id_endereco = id_endereco;
         this.rg = rg;
+        this.notificar = notificar;
     }
     public PessoaModel()
     {
-        this(0L,"","",false,"",null,null,"");
+        this(0L,"","",false,"",null,null,"",false);
     }
 
     public Long getId() {
@@ -91,5 +94,12 @@ public class PessoaModel
     }
     public void setRg(String rg) {
         this.rg = rg;
+    }
+
+    public boolean getNotificar() {
+        return notificar;
+    }
+    public void setNotificar(boolean notificar) {
+        this.notificar = notificar;
     }
 }

@@ -17,7 +17,7 @@ public class PessoaDAO
     public static PessoaCompletoDTO findByPessoa(String cpf)
     {
         PessoaCompletoDTO pessoaDTO = null;
-        String sql = "SELECT p.pe_cod, p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, " +
+        String sql = "SELECT p.pe_cod, p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, p.notificar," +
                 "c.con_telefone, c.con_email, " +
                 "e.en_cep, e.en_rua, e.en_numero, e.en_bairro, e.en_cidade, e.en_uf, e.en_complemento " +
                 "FROM pessoa p " +
@@ -40,7 +40,8 @@ public class PessoaDAO
                         rs.getString("pe_profissao"),
                         rs.getLong("con_cod"),
                         rs.getLong("en_id"),
-                        rs.getString("pe_rg")
+                        rs.getString("pe_rg"),
+                        rs.getBoolean("notificar")
                 );
 
                 //relacionando os objetos completos
@@ -73,7 +74,7 @@ public class PessoaDAO
     public PessoaCompletoDTO findById(long id)
     {
         PessoaCompletoDTO pessoaDTO = null;
-        String sql = "SELECT p.pe_cod, p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, " +
+        String sql = "SELECT p.pe_cod, p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, p.notificar," +
                 "c.con_telefone, c.con_email, " +
                 "e.en_cep, e.en_rua, e.en_numero, e.en_bairro, e.en_cidade, e.en_uf, e.en_complemento " +
                 "FROM pessoa p " +
@@ -95,7 +96,8 @@ public class PessoaDAO
                         rs.getString("pe_profissao"),
                         rs.getLong("con_cod"),
                         rs.getLong("en_id"),
-                        rs.getString("pe_rg")
+                        rs.getString("pe_rg"),
+                        rs.getBoolean("notificar")
                 );
 
                 ContatoModel contato = new ContatoModel(
@@ -246,7 +248,7 @@ public class PessoaDAO
     {
         List<PessoaCompletoDTO> list = new ArrayList<>();
 
-        String sql = "SELECT p.pe_cod, p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, " +
+        String sql = "SELECT p.pe_cod, p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, p.notificar," +
                 "c.con_cod, c.con_telefone, c.con_email, " +
                 "e.en_id, e.en_cep, e.en_rua, e.en_numero, e.en_bairro, e.en_cidade, e.en_uf, e.en_complemento " +
                 "FROM pessoa p " +
@@ -266,7 +268,8 @@ public class PessoaDAO
                         rs.getString("pe_profissao"),
                         rs.getLong("con_cod"),
                         rs.getLong("en_id"),
-                        rs.getString("pe_rg")
+                        rs.getString("pe_rg"),
+                        rs.getBoolean("notificar")
                 );
 
                 ContatoModel contato = new ContatoModel(
