@@ -108,12 +108,21 @@
                   <option value="MS">MS</option>
                 </select>
               </div>
-              <div class="md:col-span-2">
+              <div>
                   <label class="block font-semibold mb-1">Complemento</label>
                   <input id="complemento-doador" maxlength="30" type="text" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Ex. Casa...">
                   <p id="erroNomeDoador" class="text-red-500 text-sm mt-1"></p>
-                </div>
+              </div>
               <div>
+                <br>
+                <label>Deseja receber notificações?</label><br>
+
+                <input type="radio" name="notificar" value="true" id="notificarSim">
+                <label for="notificarSim">Sim</label>
+                
+                <input type="radio" name="notificar" value="false" id="notificarNao" checked>
+                <label for="notificarNao">Não</label>
+              </div>
           </div>
           <div class="text-right pt-6">
               <button type="submit" class="bg-carmesim text-white px-6 py-3 rounded-full font-semibold hover:bg-[#8a0128] transition-all">

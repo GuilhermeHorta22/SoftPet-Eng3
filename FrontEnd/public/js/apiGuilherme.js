@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const cpf = document.getElementById('cpf-doador').value.trim();
                 const rg = document.getElementById('rg-doador').value.trim();
                 const profissao = document.getElementById('profissao-doador').value.trim();
+                const notificar = document.querySelector('input[name="notificar"]:checked').value;
 
                 const telefone = document.getElementById('fone-doador').value.trim();
                 const email = document.getElementById('email-doador').value.trim();
@@ -79,7 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         cpf: cpf,
                         nome: nome,
                         profissao: profissao,
-                        rg: rg
+                        rg: rg,
+                        notificar: notificar === "true"
                     },
                     contato: {
                         telefone: telefone,
