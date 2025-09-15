@@ -129,8 +129,8 @@ public class PessoaDAO
 
 
     public PessoaModel addPessoa(PessoaModel pessoa) {
-        String sql = "INSERT INTO pessoa (pe_cpf, pe_nome, pe_profissao, con_cod, en_id, pe_rg, pe_status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO pessoa (pe_cpf, pe_nome, pe_profissao, con_cod, en_id, pe_rg, pe_status, notificar) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try(PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
@@ -153,6 +153,8 @@ public class PessoaDAO
             // Aqui está o novo campo: pe_status = true
             stmt.setBoolean(7, true);
 
+            stmt.setBoolean(8,pessoa.getNotificar());
+
             int linhasMod = stmt.executeUpdate();
             if(linhasMod > 0)
             {
@@ -168,14 +170,12 @@ public class PessoaDAO
         return pessoa;
     }
 
-
-
     public Boolean updatePessoa(String cpf, PessoaModel pessoa)
     {
         if(!cpf.equals(pessoa.getCpf()))
             throw new IllegalArgumentException("O CPF não pode ser alterado.");
 
-        String sql = "UPDATE pessoa SET pe_nome = ?, pe_status = ?, pe_profissao = ?, con_cod = ?, en_id = ?, pe_rg = ? WHERE pe_cpf = ?";
+        String sql = "UPDATE pessoa SET pe_nome = ?, pe_status = ?, pe_profissao = ?, con_cod = ?, en_id = ?, pe_rg = ?, notificar = ? WHERE pe_cpf = ?";
         try(PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql))
         {
             stmt.setString(1, pessoa.getNome());
@@ -190,7 +190,8 @@ public class PessoaDAO
             else
                 stmt.setNull(5, java.sql.Types.BIGINT);
             stmt.setString(6, pessoa.getRg());
-            stmt.setString(7, cpf);
+            stmt.setBoolean(7,pessoa.getNotificar());
+            stmt.setString(8, cpf);
 
             return stmt.executeUpdate() > 0;
         }
