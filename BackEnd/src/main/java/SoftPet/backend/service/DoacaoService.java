@@ -102,27 +102,4 @@ public class DoacaoService
         return doacaoDAO.getAllDoacoes();
     }
 
-    public void consumirDoacao(Long id, int qtdeConsumida) throws Exception
-    {
-        if(id == null || id <= 0)
-            throw new IllegalArgumentException("ID da doação inválido!");
-
-        if(!Validation.numNegativo(qtdeConsumida))
-            throw new IllegalArgumentException("Quantidade da doação inválida!");
-
-        DoacaoDTO doacaoExistente = doacaoDAO.findByDoacao(id);
-        if(doacaoExistente == null)
-            throw new Exception("Não existe uma doação com esse ID!");
-
-        int estoqueAtual = doacaoExistente.getDoacao().getQtde();
-
-        if(qtdeConsumida > estoqueAtual)
-            throw new IllegalArgumentException("Quantidade a consumir maior que o estoque atual!");
-
-        int novoEstoque = estoqueAtual - qtdeConsumida;
-        DoacaoModel doacaoAtualizada = doacaoExistente.getDoacao();
-        doacaoAtualizada.setQtde(novoEstoque);
-
-        doacaoDAO.updateDoacao(doacaoAtualizada);
-    }
 }

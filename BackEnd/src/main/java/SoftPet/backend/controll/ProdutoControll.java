@@ -77,5 +77,18 @@ public class ProdutoControll {
         }
     }
 
-
+    @PutMapping("/consumir/{id}/{qtde}")
+    public ResponseEntity<Object> consumirProduto(@PathVariable Long id, @PathVariable int qtde)
+    {
+        try
+        {
+            produtoService.consumirProduto(id, qtde);
+            return ResponseEntity.ok("Consumo do produto realizado com sucesso!");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Erro ao consumir doação: " + e.getMessage());
+        }
+    }
 }
