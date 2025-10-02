@@ -32,6 +32,7 @@ public class PessoaService implements Observer
     @Autowired
     private EnderecoDAO enderecoDAO;
 
+    @Autowired
     private ProdutoService produtoService;
 
     public PessoaModel addPessoa(PessoaCompletoDTO pessoa) throws Exception

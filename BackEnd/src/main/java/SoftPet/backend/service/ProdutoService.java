@@ -14,6 +14,7 @@ import SoftPet.backend.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,7 +28,7 @@ public class ProdutoService implements Subject
     private PessoaService observer;
 
     //vou usar para ter o controle de quem eu vou mandar o email quando o estoque chegar em 0
-    private List<PessoaCompletoDTO> listaNotify;
+    private List<PessoaCompletoDTO> listaNotify = new ArrayList<>();
 
     public ProdutoModel addProduto(ProdutoDTO produtoDTO) throws Exception {
         ProdutoModel produto = produtoDTO.getProduto();
@@ -147,7 +148,7 @@ public class ProdutoService implements Subject
         produtoDAO.updateProduto(produtoAtualizado);
 
         //chamada do notificar do observer
-        if(novoEstoque <= 0)
+        if(novoEstoque == 0)
             notificarObserver(produtoAtualizado);
     }
 }
