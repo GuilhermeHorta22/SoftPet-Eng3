@@ -10,6 +10,7 @@ import SoftPet.backend.model.EnderecoModel;
 import SoftPet.backend.model.ProdutoModel;
 import SoftPet.backend.observer.Observer;
 import SoftPet.backend.util.cpfValidator;
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.*;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
@@ -32,7 +33,14 @@ public class PessoaService implements Observer
     @Autowired
     private EnderecoDAO enderecoDAO;
 
+    @Autowired
     private ProdutoService produtoService;
+
+    @PostConstruct
+    public void init()
+    {
+        produtoService.adicionarObserver(this); //registrando PessoaService como observer
+    }
 
     public PessoaModel addPessoa(PessoaCompletoDTO pessoa) throws Exception
     {
@@ -63,12 +71,8 @@ public class PessoaService implements Observer
 
         PessoaModel pessoaFinal = pessoaDAO.addPessoa(novaPessoa);
 
-        if(pessoaFinal.getNotificar())
-            produtoService.adicionarObserver(new PessoaCompletoDTO(pessoaFinal, novoContato, novoEndereco));
-
         return pessoaFinal;
     }
-
 
     public PessoaCompletoDTO getPessoaCpf(String cpf)
     {
@@ -110,17 +114,6 @@ public class PessoaService implements Observer
 
         contatoDAO.updateContato(contatoAtualizado);
         enderecoDAO.updateEndereco(pessoa.getId_endereco(),endereco);
-
-        PessoaCompletoDTO pessoaAtualizada = new PessoaCompletoDTO(pessoa, contatoAtualizado, endereco);
-
-        boolean notificarAntes = pessoaExistente.getPessoa().getNotificar();
-        boolean notificarAgora = pessoa.getNotificar();
-
-        if(!notificarAntes && notificarAgora) //ativou o flag -> adicionar como observer
-            produtoService.adicionarObserver(pessoaAtualizada);
-        else
-        if(notificarAntes && !notificarAgora)//desativou o flag -> remover como observer
-            produtoService.removerObserver(pessoaAtualizada);
     }
 
     public void deletePessoa(String cpf) throws Exception
@@ -168,53 +161,13 @@ public class PessoaService implements Observer
     }
 
     @Override
-    public void update(ProdutoModel produto, PessoaCompletoDTO pessoa)
+    public void update(ProdutoModel produto)
     {
-        System.out.println("Produto: "+produto.getDescricao());
-        System.out.println("Está com estoque atual em: "+produto.getQuantidadeEstoque());
-        System.out.println("Mensagem para o doador: "+pessoa.getPessoa().getNome());
-//        String host = "smtp.gmail.com";
-//        String emailOng = "notificarsoftpet@gmail.com";
-//        String senha = "softpet123";
-//
-//        Properties props = new Properties();
-//        props.put("mail.smtp.auth", "true");
-//        props.put("mail.smtp.starttls.enable", "true");
-//        props.put("mail.smtp.host", host);
-//        props.put("mail.smtp.port", "587");
-//
-//        Session session = Session.getInstance(props, new Authenticator() {
-//            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication(emailOng, senha);
-//            }
-//        });
-//
-//        try
-//        {
-//            Message message = new MimeMessage(session);
-//            message.setFrom(new InternetAddress(emailOng));
-//            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(pessoa.getContato().getEmail()));
-//
-//            message.setSubject("Produto em falta no estoque: " + produto.getDescricao());
-//
-//            String email = "Olá " + pessoa.getPessoa().getNome() + ",\n\n"
-//                    + "O produto abaixo chegou a **0 unidades em estoque**:\n\n"
-//                    + " Produto: " + produto.getDescricao() + "\n"
-//                    + " Tipo: " + produto.getTipo() + "\n"
-//                    + " Quantidade atual: " + produto.getQuantidadeEstoque() + "\n\n"
-//                    + "Por favor, verifique a necessidade de reposição.\n\n"
-//                    + "Atenciosamente,\nEquipe SoftPet";
-//
-//            message.setText(email);
-//            Transport.send(message);
-//        }
-//        catch(AddressException e)
-//        {
-//            throw new RuntimeException(e);
-//        }
-//        catch(MessagingException e)
-//        {
-//            e.printStackTrace();
-//        }
+        List<PessoaCompletoDTO> pessoas = pessoaDAO.findAllByNotificarTrue();
+        for(PessoaCompletoDTO pessoa : pessoas)
+        {
+            System.out.println("Produto: " + produto.getDescricao() +
+                    " está em 0 unidades. Notificando: " + pessoa.getPessoa().getNome());
+        }
     }
 }

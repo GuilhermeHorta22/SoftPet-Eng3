@@ -6,5 +6,5 @@ import SoftPet.backend.model.ProdutoModel;
 
 public interface Observer
 {
-    void update(ProdutoModel produto, PessoaCompletoDTO pessoa);
+    void update(ProdutoModel produto);
 }

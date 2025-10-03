@@ -127,6 +127,60 @@ public class PessoaDAO
         return pessoaDTO;
     }
 
+    public List<PessoaCompletoDTO> findAllByNotificarTrue()
+    {
+        List<PessoaCompletoDTO> pessoas = new ArrayList<>();
+        String sql = "SELECT p.pe_cod, p.pe_cpf, p.pe_nome, p.pe_status, p.pe_profissao, p.con_cod, p.en_id, p.pe_rg, p.notificar," +
+                "c.con_telefone, c.con_email, " +
+                "e.en_cep, e.en_rua, e.en_numero, e.en_bairro, e.en_cidade, e.en_uf, e.en_complemento " +
+                "FROM pessoa p " +
+                "JOIN contato c ON p.con_cod = c.con_cod " +
+                "JOIN endereco e ON p.en_id = e.en_id " +
+                "WHERE p.notificar = TRUE";
+
+        try(PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql))
+        {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                PessoaModel pessoa = new PessoaModel(
+                        rs.getLong("pe_cod"),
+                        rs.getString("pe_cpf"),
+                        rs.getString("pe_nome"),
+                        rs.getBoolean("pe_status"),
+                        rs.getString("pe_profissao"),
+                        rs.getLong("con_cod"),
+                        rs.getLong("en_id"),
+                        rs.getString("pe_rg"),
+                        rs.getBoolean("notificar")
+                );
+
+                ContatoModel contato = new ContatoModel(
+                        rs.getLong("con_cod"),
+                        rs.getString("con_telefone"),
+                        rs.getString("con_email")
+                );
+
+                EnderecoModel endereco = new EnderecoModel(
+                        rs.getLong("en_id"),
+                        rs.getString("en_cep"),
+                        rs.getString("en_rua"),
+                        rs.getInt("en_numero"),
+                        rs.getString("en_bairro"),
+                        rs.getString("en_cidade"),
+                        rs.getString("en_uf"),
+                        rs.getString("en_complemento")
+                );
+
+                pessoas.add(new PessoaCompletoDTO(pessoa, contato, endereco));
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new RuntimeException("Erro ao buscar pessoas com notificar = true: " + e.getMessage(), e);
+        }
+
+        return pessoas;
+    }
 
     public PessoaModel addPessoa(PessoaModel pessoa) {
         String sql = "INSERT INTO pessoa (pe_cpf, pe_nome, pe_profissao, con_cod, en_id, pe_rg, pe_status, notificar) " +

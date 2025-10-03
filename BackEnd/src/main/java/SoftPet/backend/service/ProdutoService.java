@@ -2,32 +2,27 @@ package SoftPet.backend.service;
 
 import SoftPet.backend.DAO.ProdutoDAO;
 
-import SoftPet.backend.dto.DoacaoDTO;
-import SoftPet.backend.dto.PessoaCompletoDTO;
 import SoftPet.backend.dto.ProdutoDTO;
-import SoftPet.backend.model.DoacaoModel;
-import SoftPet.backend.model.PessoaModel;
 import SoftPet.backend.model.ProdutoModel;
+import SoftPet.backend.observer.Observer;
 import SoftPet.backend.observer.Subject;
 import SoftPet.backend.util.Validation;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ProdutoService implements Subject
 {
-
     @Autowired
     private ProdutoDAO produtoDAO;
 
-    //vou usar para observar a quantidade do produto
-    private PessoaService observer;
-
     //vou usar para ter o controle de quem eu vou mandar o email quando o estoque chegar em 0
-    private List<PessoaCompletoDTO> listaNotify;
+    private List<Observer> observers = new ArrayList<>();
 
     public ProdutoModel addProduto(ProdutoDTO produtoDTO) throws Exception {
         ProdutoModel produto = produtoDTO.getProduto();
@@ -102,25 +97,22 @@ public class ProdutoService implements Subject
     }
 
     @Override
-    public void adicionarObserver(PessoaCompletoDTO pessoa)
+    public void adicionarObserver(Observer observer)
     {
-        if(pessoa.getPessoa().getNotificar() == true && !listaNotify.contains(pessoa))
-            listaNotify.add(pessoa);
+        observers.add(observer);
     }
 
     @Override
-    public void removerObserver(PessoaCompletoDTO pessoa)
+    public void removerObserver(Observer observer)
     {
-        if(listaNotify.contains(pessoa))
-            listaNotify.remove(pessoa);
+        observers.remove(observer);
     }
 
     @Override
     public void notificarObserver(ProdutoModel produto)
     {
-        observer = new PessoaService();
-        for(PessoaCompletoDTO pessoa : listaNotify)
-            observer.update(produto, pessoa);
+        for(Observer o : observers)
+            o.update(produto);
     }
 
     public void consumirProduto(Long id, int qtdeConsumida) throws Exception
@@ -147,7 +139,7 @@ public class ProdutoService implements Subject
         produtoDAO.updateProduto(produtoAtualizado);
 
         //chamada do notificar do observer
-        if(novoEstoque <= 0)
+        if(novoEstoque == 0)
             notificarObserver(produtoAtualizado);
     }
 }

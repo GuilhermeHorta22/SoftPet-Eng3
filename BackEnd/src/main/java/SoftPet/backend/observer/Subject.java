@@ -6,7 +6,7 @@ import SoftPet.backend.model.ProdutoModel;
 
 public interface Subject
 {
-    void adicionarObserver(PessoaCompletoDTO pessoa);
-    void removerObserver(PessoaCompletoDTO pessoa);
+    void adicionarObserver(Observer observer);
+    void removerObserver(Observer observer);
     void notificarObserver(ProdutoModel produto);
 }
