@@ -10,6 +10,7 @@ import SoftPet.backend.model.AnimalModel;       // Importação adicionada
 import SoftPet.backend.model.AnimalXVacinacaoModel; // Importação adicionada
 import SoftPet.backend.model.VacinaModel;
 import SoftPet.backend.model.VoluntarioModel; // Importação adicionada
+import SoftPet.backend.service.template.AtualizaEstoqueVacina;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -216,5 +217,14 @@ public class VacinaService {
         sb.append(String.format("Registrado por Vol: '%s' (Cod: %d).",
                 registrador.getNome(), registrador.getId()));
         return sb.toString();
+    }
+
+    @Autowired private AtualizaEstoqueVacina estoqueVacina;
+
+    public void consumirVacina(Long id, int qtde) throws Exception {
+        estoqueVacina.executar(new AtualizaEstoqueVacina.Req(id, -Math.abs(qtde)));
+    }
+    public void reporVacina(Long id, int qtde) throws Exception {
+        estoqueVacina.executar(new AtualizaEstoqueVacina.Req(id, Math.abs(qtde)));
     }
 }

@@ -78,17 +78,28 @@ public class ProdutoControll {
     }
 
     @PutMapping("/consumir/{id}/{qtde}")
-    public ResponseEntity<Object> consumirProduto(@PathVariable Long id, @PathVariable int qtde)
-    {
-        try
-        {
+    public ResponseEntity<Object> consumirProduto(@PathVariable Long id, @PathVariable int qtde) {
+        try {
             produtoService.consumirProduto(id, qtde);
-            return ResponseEntity.ok("Consumo do produto realizado com sucesso!");
-        }
-        catch(Exception e)
-        {
+            // opcional: retornar o produto atualizado
+            ProdutoDTO atualizado = produtoService.getProduto(id);
+            return ResponseEntity.ok(atualizado != null ? atualizado : "Consumo do produto realizado com sucesso!");
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Erro ao consumir doação: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Erro ao consumir produto: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/repor/{id}/{qtde}")
+    public ResponseEntity<Object> reporProduto(@PathVariable Long id, @PathVariable int qtde) {
+        try {
+            produtoService.reporProduto(id, qtde);
+            // opcional: retornar o produto atualizado
+            ProdutoDTO atualizado = produtoService.getProduto(id);
+            return ResponseEntity.ok(atualizado != null ? atualizado : "Reposição realizada com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Erro ao repor produto: " + e.getMessage());
         }
     }
 }

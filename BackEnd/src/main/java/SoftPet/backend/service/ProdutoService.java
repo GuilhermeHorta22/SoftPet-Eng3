@@ -6,6 +6,7 @@ import SoftPet.backend.dto.ProdutoDTO;
 import SoftPet.backend.model.ProdutoModel;
 import SoftPet.backend.observer.Observer;
 import SoftPet.backend.observer.Subject;
+import SoftPet.backend.service.template.AtualizaEstoqueProduto;
 import SoftPet.backend.util.Validation;
 
 import jakarta.annotation.PostConstruct;
@@ -115,31 +116,40 @@ public class ProdutoService implements Subject
             o.update(produto);
     }
 
-    public void consumirProduto(Long id, int qtdeConsumida) throws Exception
-    {
-        if(id == null || id <= 0)
-            throw new IllegalArgumentException("ID do produto inválido!");
+//    public void consumirProduto(Long id, int qtdeConsumida) throws Exception
+//    {
+//        if(id == null || id <= 0)
+//            throw new IllegalArgumentException("ID do produto inválido!");
+//
+//        if(!Validation.numNegativo(qtdeConsumida))
+//            throw new IllegalArgumentException("Quantidade do produto inválida!");
+//
+//        ProdutoDTO produtoExistente = produtoDAO.findByProduto(id);
+//        if(produtoExistente == null)
+//            throw new Exception("Não existe uma doação com esse ID!");
+//
+//        int estoqueAtual = produtoExistente.getProduto().getQuantidadeEstoque();
+//
+//        if(qtdeConsumida > estoqueAtual)
+//            throw new IllegalArgumentException("Quantidade a consumir maior que o estoque atual!");
+//
+//        int novoEstoque = estoqueAtual - qtdeConsumida;
+//        ProdutoModel produtoAtualizado = produtoExistente.getProduto();
+//        produtoAtualizado.setQuantidadeEstoque(novoEstoque);
+//
+//        produtoDAO.updateProduto(produtoAtualizado);
+//
+//        //chamada do notificar do observer
+//        if(novoEstoque == 0)
+//            notificarObserver(produtoAtualizado);
+//    }
 
-        if(!Validation.numNegativo(qtdeConsumida))
-            throw new IllegalArgumentException("Quantidade do produto inválida!");
-
-        ProdutoDTO produtoExistente = produtoDAO.findByProduto(id);
-        if(produtoExistente == null)
-            throw new Exception("Não existe uma doação com esse ID!");
-
-        int estoqueAtual = produtoExistente.getProduto().getQuantidadeEstoque();
-
-        if(qtdeConsumida > estoqueAtual)
-            throw new IllegalArgumentException("Quantidade a consumir maior que o estoque atual!");
-
-        int novoEstoque = estoqueAtual - qtdeConsumida;
-        ProdutoModel produtoAtualizado = produtoExistente.getProduto();
-        produtoAtualizado.setQuantidadeEstoque(novoEstoque);
-
-        produtoDAO.updateProduto(produtoAtualizado);
-
-        //chamada do notificar do observer
-        if(novoEstoque == 0)
-            notificarObserver(produtoAtualizado);
+    public void consumirProduto(Long id, int qtde) throws Exception {
+        var template = new AtualizaEstoqueProduto(produtoDAO, observers);
+        template.executar(new AtualizaEstoqueProduto.Req(id, -Math.abs(qtde)));
+    }
+    public void reporProduto(Long id, int qtde) throws Exception {
+        var template = new AtualizaEstoqueProduto(produtoDAO, observers);
+        template.executar(new AtualizaEstoqueProduto.Req(id, Math.abs(qtde)));
     }
 }

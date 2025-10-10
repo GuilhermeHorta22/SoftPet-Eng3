@@ -12,11 +12,11 @@ import java.util.List;
 public class VacinaDAO {
 
     public VacinaModel criar(VacinaModel vacina) {
-        String sql = "INSERT INTO VACINAS (VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO VACINAS (VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE, VA_QTDE) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, vacina.getNome());
-            stmt.setString(2, vacina.getDescricao()); // Descrição pode ser nula
+            stmt.setString(2, vacina.getDescricao());
 
             if (vacina.getDataReferenciaLote() != null) {
                 stmt.setDate(3, new java.sql.Date(vacina.getDataReferenciaLote().getTime()));
@@ -25,19 +25,14 @@ public class VacinaDAO {
             }
 
             stmt.setString(4, vacina.getTipoDosePadrao());
+            stmt.setInt(5, vacina.getQuantidadeEstoque() != null ? vacina.getQuantidadeEstoque() : 0);
 
             int affectedRows = stmt.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new SQLException("Falha ao criar vacina, nenhuma linha afetada.");
-            }
+            if (affectedRows == 0) throw new SQLException("Falha ao criar vacina, nenhuma linha afetada.");
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    vacina.setCod(generatedKeys.getLong(1));
-                } else {
-                    throw new SQLException("Falha ao criar vacina, nenhum ID (VA_COD) obtido.");
-                }
+                if (generatedKeys.next()) vacina.setCod(generatedKeys.getLong(1));
+                else throw new SQLException("Falha ao criar vacina, nenhum ID (VA_COD) obtido.");
             }
             return vacina;
         } catch (SQLException e) {
@@ -47,81 +42,74 @@ public class VacinaDAO {
     }
 
     public VacinaModel buscarPorNome(String nome) {
-        if (nome == null) {
-            System.err.println("Tentativa de buscar vacina com nome nulo.");
-            return null;
-        }
-        String sql = "SELECT VA_COD, VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE FROM VACINAS WHERE VA_NOME = ?";
+        if (nome == null) { System.err.println("Tentativa de buscar vacina com nome nulo."); return null; }
+
+        String sql = "SELECT VA_COD, VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE, VA_QTDE FROM VACINAS WHERE VA_NOME = ?";
         try (PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql)) {
-
             stmt.setString(1, nome);
-
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new VacinaModel(
-                            rs.getLong("VA_COD"),      // Lê como Long
+                    VacinaModel v = new VacinaModel(
+                            rs.getLong("VA_COD"),
                             rs.getString("VA_NOME"),
                             rs.getString("VA_DESC"),
-                            rs.getDate("VA_DT_APLICACAO"), // java.sql.Date, compatível com java.util.Date
+                            rs.getDate("VA_DT_APLICACAO"),
                             rs.getString("VA_DOSE")
                     );
+                    v.setQuantidadeEstoque(rs.getInt("VA_QTDE")); // NOT NULL, default 0
+                    return v;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Erro ao buscar vacina por código " + nome + ": " + e.getMessage(), e);
+            throw new RuntimeException("Erro ao buscar vacina por nome " + nome + ": " + e.getMessage(), e);
         }
         return null;
     }
 
     public VacinaModel buscarPorCod(Long cod) {
-        if (cod == null) {
-            System.err.println("Tentativa de buscar vacina com código nulo.");
-            return null;
-        }
-        String sql = "SELECT VA_COD, VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE FROM VACINAS WHERE VA_COD = ?";
+        if (cod == null) { System.err.println("Tentativa de buscar vacina com código nulo."); return null; }
+
+        String sql = "SELECT VA_COD, VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE, VA_QTDE FROM VACINAS WHERE VA_COD = ?";
         try (PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql)) {
-
-            stmt.setInt(1, cod.intValue()); // Converte Long para int para a coluna VA_COD (INTEGER)
-
+            stmt.setInt(1, cod.intValue());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new VacinaModel(
-                            rs.getLong("VA_COD"),      // Lê como Long
+                    VacinaModel v = new VacinaModel(
+                            rs.getLong("VA_COD"),
                             rs.getString("VA_NOME"),
                             rs.getString("VA_DESC"),
-                            rs.getDate("VA_DT_APLICACAO"), // java.sql.Date, compatível com java.util.Date
+                            rs.getDate("VA_DT_APLICACAO"),
                             rs.getString("VA_DOSE")
                     );
+                    v.setQuantidadeEstoque(rs.getInt("VA_QTDE"));
+                    return v;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao buscar vacina por código " + cod + ": " + e.getMessage(), e);
         }
-        return null; // Retorna null se não encontrar
+        return null;
     }
 
     public List<VacinaModel> listarTodas() {
         List<VacinaModel> vacinas = new ArrayList<>();
-        String sql = "SELECT VA_COD, VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE FROM VACINAS ORDER BY VA_NOME";
-
-        // Usando try-with-resources para ResultSet (que também fecha o Statement implícito do consultar)
+        String sql = "SELECT VA_COD, VA_NOME, VA_DESC, VA_DT_APLICACAO, VA_DOSE, VA_QTDE FROM VACINAS ORDER BY VA_NOME";
         try (ResultSet rs = SingletonDB.getConexao().consultar(sql)) {
-            // O método consultar do SingletonDB agora retorna null em caso de erro interno.
             if (rs != null) {
                 while (rs.next()) {
-                    vacinas.add(new VacinaModel(
-                            rs.getLong("VA_COD"),      // Lê como Long
+                    VacinaModel v = new VacinaModel(
+                            rs.getLong("VA_COD"),
                             rs.getString("VA_NOME"),
                             rs.getString("VA_DESC"),
                             rs.getDate("VA_DT_APLICACAO"),
                             rs.getString("VA_DOSE")
-                    ));
+                    );
+                    v.setQuantidadeEstoque(rs.getInt("VA_QTDE"));
+                    vacinas.add(v);
                 }
             } else {
-                // Um erro ocorreu dentro do SingletonDB.consultar() e já foi logado.
-                // Pode-se lançar uma exceção aqui ou retornar a lista vazia.
                 System.err.println("Falha ao listar vacinas: ResultSet nulo retornado por SingletonDB.consultar().");
             }
         } catch (SQLException e) {
@@ -138,29 +126,29 @@ public class VacinaDAO {
      * Lança RuntimeException em caso de erro ou se a vacina não for encontrada.
      */
     public VacinaModel atualizar(VacinaModel vacina) {
-        if (vacina.getCod() == null) {
-            throw new IllegalArgumentException("O código da vacina é obrigatório para atualização.");
-        }
-        String sql = "UPDATE VACINAS SET VA_NOME = ?, VA_DESC = ?, VA_DT_APLICACAO = ?, VA_DOSE = ? WHERE VA_COD = ?";
-        // Usando try-with-resources para PreparedStatement
+        if (vacina.getCod() == null) throw new IllegalArgumentException("O código da vacina é obrigatório para atualização.");
+
+        String sql = "UPDATE VACINAS SET VA_NOME = ?, VA_DESC = ?, VA_DT_APLICACAO = ?, VA_DOSE = ?, VA_QTDE = ? WHERE VA_COD = ?";
+
         try (PreparedStatement stmt = SingletonDB.getConexao().getPreparedStatement(sql)) {
             stmt.setString(1, vacina.getNome());
             stmt.setString(2, vacina.getDescricao());
+
             if (vacina.getDataReferenciaLote() != null) {
                 stmt.setDate(3, new java.sql.Date(vacina.getDataReferenciaLote().getTime()));
             } else {
-                stmt.setNull(3, Types.DATE); // VA_DT_APLICACAO é NOT NULL, então isso causaria erro no banco.
-                // A validação deve ocorrer na camada de serviço.
+                stmt.setNull(3, Types.DATE);
             }
+
             stmt.setString(4, vacina.getTipoDosePadrao());
-            stmt.setInt(5, vacina.getCod().intValue()); // Converte Long para int para VA_COD (INTEGER)
+            stmt.setInt(5, vacina.getQuantidadeEstoque() != null ? vacina.getQuantidadeEstoque() : 0);
+            stmt.setInt(6, vacina.getCod().intValue());
 
             int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                // Isso pode significar que a vacina com o ID fornecido não existe.
-                throw new SQLException("Falha ao atualizar vacina, nenhuma linha afetada (ID: " + vacina.getCod() + " pode não existir).");
-            }
-            return vacina; // Retorna o objeto com os dados atualizados
+            if (affectedRows == 0)
+                throw new SQLException("Falha ao atualizar vacina, nenhuma linha afetada (ID: " + vacina.getCod() + ").");
+
+            return vacina;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao atualizar vacina com ID " + vacina.getCod() + ": " + e.getMessage(), e);

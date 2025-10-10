@@ -139,4 +139,27 @@ public class VacinaControl {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao processar registro de vacinação: " + e.getMessage());
         }
     }
+
+    @PutMapping("/estoque/repor/{id}/{qtde}")
+    public ResponseEntity<?> reporEstoque(@PathVariable Long id, @PathVariable int qtde) {
+        try {
+            vacinaService.reporVacina(id, qtde);
+            return ResponseEntity.ok(vacinaService.buscarVacinaPorId(id));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Erro ao repor estoque da vacina: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/estoque/consumir/{id}/{qtde}")
+    public ResponseEntity<?> consumirEstoque(@PathVariable Long id, @PathVariable int qtde) {
+        try {
+            vacinaService.consumirVacina(id, qtde);
+            return ResponseEntity.ok(vacinaService.buscarVacinaPorId(id));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Erro ao consumir estoque da vacina: " + e.getMessage());
+        }
+    }
+
 }

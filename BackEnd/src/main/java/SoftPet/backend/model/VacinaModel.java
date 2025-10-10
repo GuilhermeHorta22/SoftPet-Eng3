@@ -8,28 +8,21 @@ public class VacinaModel {
     private String descricao;       // Mapeia para VA_DESC VARCHAR(255)
     private Date dataReferenciaLote; // Mapeia para VA_DT_APLICACAO DATE (data referente à vacina)
     private String tipoDosePadrao;  // Mapeia para VA_DOSE VARCHAR(20) (tipo/dose padrão da vacina)
-
+    private Integer quantidadeEstoque = 0;
     /**
      * Construtor padrão.
      */
-    public VacinaModel() {
-    }
+    public VacinaModel() {}
 
-    /**
-     * Construtor com todos os campos.
-     * cod: Código da vacina (VA_COD).
-     * nome: Nome da vacina (VA_NOME).
-     * descricao: Descrição da vacina (VA_DESC).
-     * dataReferenciaLote: Data referente ao lote ou tipo da vacina (VA_DT_APLICACAO).
-     * tipoDosePadrao: Tipo ou dose padrão da vacina (VA_DOSE).
-     */
     public VacinaModel(Long cod, String nome, String descricao, Date dataReferenciaLote, String tipoDosePadrao) {
         this.cod = cod;
         this.nome = nome;
         this.descricao = descricao;
         this.dataReferenciaLote = dataReferenciaLote;
         this.tipoDosePadrao = tipoDosePadrao;
+        this.quantidadeEstoque = 0; // default
     }
+
 
     // Getters e Setters
     public Long getCod() {
@@ -72,6 +65,14 @@ public class VacinaModel {
         this.tipoDosePadrao = tipoDosePadrao;
     }
 
+    public Integer getQuantidadeEstoque() {
+        return quantidadeEstoque;
+    }
+
+    public void setQuantidadeEstoque(Integer quantidadeEstoque) {
+        this.quantidadeEstoque = quantidadeEstoque;
+    }
+
     @Override
     public String toString() {
         return "VacinaModel{" +
@@ -80,6 +81,7 @@ public class VacinaModel {
                 ", descricao='" + (descricao != null ? descricao : "N/A") + '\'' +
                 ", dataReferenciaLote=" + dataReferenciaLote +
                 ", tipoDosePadrao='" + tipoDosePadrao + '\'' +
+                ", quantidadeEstoque=" + quantidadeEstoque +
                 '}';
     }
 }
