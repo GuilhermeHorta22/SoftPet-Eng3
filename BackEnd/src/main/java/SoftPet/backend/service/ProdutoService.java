@@ -1,29 +1,30 @@
 package SoftPet.backend.service;
 
 import SoftPet.backend.DAO.ProdutoDAO;
-
 import SoftPet.backend.dto.ProdutoDTO;
 import SoftPet.backend.model.ProdutoModel;
 import SoftPet.backend.observer.Observer;
 import SoftPet.backend.observer.Subject;
 import SoftPet.backend.service.template.AtualizaEstoqueProduto;
 import SoftPet.backend.util.Validation;
-
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ProdutoService implements Subject
-{
-    @Autowired
-    private ProdutoDAO produtoDAO;
+public class ProdutoService implements Subject {
 
-    //vou usar para ter o controle de quem eu vou mandar o email quando o estoque chegar em 0
-    private List<Observer> observers = new ArrayList<>();
+    private final ProdutoDAO produtoDAO;
+    private final AtualizaEstoqueProduto estoqueProduto;
+
+    // vou usar para ter o controle de quem eu vou mandar o email quando o estoque chegar em 0
+    private final List<Observer> observers = new ArrayList<>();
+
+    public ProdutoService(ProdutoDAO produtoDAO, AtualizaEstoqueProduto estoqueProduto) {
+        this.produtoDAO = produtoDAO;
+        this.estoqueProduto = estoqueProduto;
+    }
 
     public ProdutoModel addProduto(ProdutoDTO produtoDTO) throws Exception {
         ProdutoModel produto = produtoDTO.getProduto();
@@ -82,7 +83,6 @@ public class ProdutoService implements Subject
             throw new IllegalArgumentException("ID do produto inválido!");
 
         ProdutoDTO produtoDelete = produtoDAO.findByProduto(id);
-
         if (produtoDelete == null)
             throw new Exception("Produto com esse ID não existe!");
 
@@ -93,63 +93,49 @@ public class ProdutoService implements Subject
     public List<ProdutoDTO> getAllProdutos() {
         return produtoDAO.getAllProdutos();
     }
+
     public List<ProdutoDTO> buscarProdutosPorTipo(String tipo) {
         return produtoDAO.getProdutosPorTipo(tipo);
     }
 
+    // --------- Observer ---------
+
     @Override
-    public void adicionarObserver(Observer observer)
-    {
+    public void adicionarObserver(Observer observer) {
         observers.add(observer);
     }
 
     @Override
-    public void removerObserver(Observer observer)
-    {
+    public void removerObserver(Observer observer) {
         observers.remove(observer);
     }
 
     @Override
-    public void notificarObserver(ProdutoModel produto)
-    {
-        for(Observer o : observers)
-            o.update(produto);
+    public void notificarObserver(ProdutoModel produto) {
+        for (Observer o : observers) o.update(produto);
     }
 
-//    public void consumirProduto(Long id, int qtdeConsumida) throws Exception
-//    {
-//        if(id == null || id <= 0)
-//            throw new IllegalArgumentException("ID do produto inválido!");
-//
-//        if(!Validation.numNegativo(qtdeConsumida))
-//            throw new IllegalArgumentException("Quantidade do produto inválida!");
-//
-//        ProdutoDTO produtoExistente = produtoDAO.findByProduto(id);
-//        if(produtoExistente == null)
-//            throw new Exception("Não existe uma doação com esse ID!");
-//
-//        int estoqueAtual = produtoExistente.getProduto().getQuantidadeEstoque();
-//
-//        if(qtdeConsumida > estoqueAtual)
-//            throw new IllegalArgumentException("Quantidade a consumir maior que o estoque atual!");
-//
-//        int novoEstoque = estoqueAtual - qtdeConsumida;
-//        ProdutoModel produtoAtualizado = produtoExistente.getProduto();
-//        produtoAtualizado.setQuantidadeEstoque(novoEstoque);
-//
-//        produtoDAO.updateProduto(produtoAtualizado);
-//
-//        //chamada do notificar do observer
-//        if(novoEstoque == 0)
-//            notificarObserver(produtoAtualizado);
-//    }
+    // --------- Movimentação de estoque (Template Method) ---------
 
-    public void consumirProduto(Long id, int qtde) throws Exception {
-        var template = new AtualizaEstoqueProduto(produtoDAO, observers);
-        template.executar(new AtualizaEstoqueProduto.Req(id, -Math.abs(qtde)));
+    public void consumirProduto(Long id, int qtde) {
+        if (id == null || id <= 0) throw new IllegalArgumentException("ID do produto inválido!");
+        if (!Validation.numNegativo(qtde)) throw new IllegalArgumentException("Quantidade do produto inválida!");
+
+        // usa o açúcar do Template Method concreto
+        estoqueProduto.saida(id, Math.abs(qtde));
+
+        // após a operação, rele o produto e notifica se zerou
+        var dto = produtoDAO.findByProduto(id);
+        if (dto != null && dto.getProduto() != null && dto.getProduto().getQuantidadeEstoque() == 0) {
+            notificarObserver(dto.getProduto());
+        }
     }
-    public void reporProduto(Long id, int qtde) throws Exception {
-        var template = new AtualizaEstoqueProduto(produtoDAO, observers);
-        template.executar(new AtualizaEstoqueProduto.Req(id, Math.abs(qtde)));
+
+    public void reporProduto(Long id, int qtde) {
+        if (id == null || id <= 0) throw new IllegalArgumentException("ID do produto inválido!");
+        if (!Validation.numNegativo(qtde)) throw new IllegalArgumentException("Quantidade do produto inválida!");
+
+        estoqueProduto.entrada(id, Math.abs(qtde));
+        // aqui não há notificação de “zerado”, pois estamos repondo
     }
 }

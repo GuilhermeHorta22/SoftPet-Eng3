@@ -9,9 +9,7 @@ public class VacinaModel {
     private Date dataReferenciaLote; // Mapeia para VA_DT_APLICACAO DATE (data referente à vacina)
     private String tipoDosePadrao;  // Mapeia para VA_DOSE VARCHAR(20) (tipo/dose padrão da vacina)
     private Integer quantidadeEstoque = 0;
-    /**
-     * Construtor padrão.
-     */
+
     public VacinaModel() {}
 
     public VacinaModel(Long cod, String nome, String descricao, Date dataReferenciaLote, String tipoDosePadrao) {
